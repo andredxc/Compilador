@@ -40,6 +40,8 @@
     int running = 1;
     int lineNumber = 1;
 %}
+
+%x COMMENT
 %%
 
 [ \t]                       {  }
@@ -67,11 +69,17 @@
 "||"                        { return OPERATOR_OR; }
 [-+,;:(){}*<>=!&$#\\\/\[\]]	{ fprintf(stderr, "Operator: %s -- ", yytext); return yytext[0]; }
 
-[a-zA-Z_][a-zA-Z_0-9]*      { fprintf(stderr, "Identifier: %s -- ", yytext); return TK_IDENTIFIER; }
+[a-zA-Z_]+[ ][a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { fprintf(stderr, "Identifier: %s -- ", yytext); return TK_IDENTIFIER; }
 [0-9]+                      { fprintf(stderr, "Integer: %s -- ", yytext); return LIT_INTEGER; }
-[0-9].[0-9]+                { fprintf(stderr, "Real: %s -- ", yytext); return LIT_REAL; }
+[0-9]+.[0-9]+                { fprintf(stderr, "Real: %s -- ", yytext); return LIT_REAL; }
 \'\\?[a-zA-Z0-9]\'          { fprintf(stderr, "Char: %s -- ", yytext); return LIT_CHAR; }
 \".+\"                      { fprintf(stderr, "String: %s -- ", yytext); return LIT_STRING; }
+
+"//".*                      {  }
+"/*"                        { BEGIN(COMMENT); }
+<COMMENT>.                  {  }
+<COMMENT>"\n"               { lineNumber++; }
+<COMMENT>"*/"               { BEGIN(INITIAL); }
 
 .                           { return TOKEN_ERROR; }
 
@@ -85,4 +93,8 @@ int yywrap(){
 
 int isRunning(){
     return running;
+}
+
+int getLineNumber(){
+    return lineNumber;
 }
