@@ -1,1 +1,6 @@
-int andre;
+float andre, bruno;
+
+andre = 'aa';
+bruno = "Meu gato preto;
+
+\oi
