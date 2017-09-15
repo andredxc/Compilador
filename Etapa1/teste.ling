@@ -1,6 +1,7 @@
 float andre, bruno;
 
-andre = 'aa';
+andre = '\0';
 bruno = "Meu gato preto;
 
 \oi
+?

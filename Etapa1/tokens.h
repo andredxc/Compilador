@@ -1,18 +1,18 @@
-/* 
+/*
  * Lista dos tokens, com valores constantes associados.
  * Este arquivo serah posterioremente substituido, nao acrescente nada.
  * Os valores das constantes sao arbitrarios, mas nao podem ser alterados.
- * Cada valor deve ser distinto e fora da escala ascii. 
+ * Cada valor deve ser distinto e fora da escala ascii.
  * Assim, nao conflitam entre si e com os tokens representados pelo proprio
- * valor ascii de caracteres isolados. 
+ * valor ascii de caracteres isolados.
  */
- 
+
 #define KW_BYTE       256
 #define KW_SHORT      257
 #define KW_LONG       258
 #define KW_FLOAT      259
 #define KW_DOUBLE     260
-#define KW_WHEN       261
+#define KW_IF	      261
 #define KW_THEN       262
 #define KW_ELSE       263
 #define KW_WHILE      264
@@ -37,4 +37,3 @@
 #define TOKEN_ERROR   290
 
 /* END OF FILE */
-

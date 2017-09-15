@@ -32,8 +32,8 @@ int main(){
 			case KW_DOUBLE:
 				fprintf(stderr, "KW_DOUBLE\n");
 				break;
-			case KW_WHEN:
-				fprintf(stderr, "KW_WHEN\n");
+			case KW_IF:
+				fprintf(stderr, "KW_IF\n");
 				break;
 			case KW_THEN:
 				fprintf(stderr, "KW_THEN\n");
@@ -89,6 +89,9 @@ int main(){
 			case LIT_STRING:
 				fprintf(stderr, "LIT_STRING\n");
 				break;
+            case TOKEN_ERROR:
+                fprintf(stderr, "TOKEN_ERROR\n");
+                break;
 			default:
 				fprintf(stderr, "OPERATOR\n");
 		}
