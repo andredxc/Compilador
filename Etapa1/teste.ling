@@ -1,20 +1,5 @@
-9andre      //Pega inteiro e identificador, nao sei se esta certo
+9andre                  //Pega inteiro e identificador
 minha variavel
 
-
-float num1, num2, _num3;
-
-num1 = 982;
-num2 = 98.4;
-
-while(num1 >= 0){
-
-    num1 = num1 - 1;
-}
-
-while(num2 >= 0.1){
-
-    num2 = num2 - 0.1;
-}
-
-return;
+float var;
+float: minha variavel legal
