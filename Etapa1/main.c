@@ -1,6 +1,6 @@
 #include <stdio.h>
-
 #include "tokens.h"
+
 
 extern FILE* yyin;
 extern int yylex();
@@ -9,7 +9,6 @@ extern int isRunning();
 int main(){
 
 	int token;
-
 	yyin = fopen("teste.ling", "r");
 
 	while(isRunning()){
@@ -98,5 +97,5 @@ int main(){
 		//fprintf(stderr, "tok = %d\n", token);
 	}
 
-	return 1;
+	return 0;
 }

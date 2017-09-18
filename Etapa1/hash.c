@@ -1,7 +1,5 @@
 #include "hash.h"
 
-HASH_NODE *_hashTable[HASH_SIZE];
-
 
 void hashInit(){
 
@@ -27,13 +25,23 @@ HASH_NODE* hashInsert(int type, char* text){
 
     HASH_NODE *newNode;
     int address;
-
     address = hashAddress(text);
+
+    //Verify exist node
+    HASH_NODE *exist_node;
+    exist_node = hashFind(text);
+    if(exist_node != NULL){
+        //fprintf(stderr, ">>> %s: Repeteco na hash \n", text);
+        return exist_node;
+    }
+    //fprintf(stderr, ">>> %s: Uebaaa add na hash \n", text);
+
     //Initializes new node
     newNode = (HASH_NODE*) calloc(1, sizeof(HASH_NODE));
     newNode->type = type;
-    newNode->text = (char*) calloc(strlen(text), sizeof(char));
+    newNode->text = (char*) calloc(strlen(text)+1, sizeof(char));
     strncpy(newNode->text, text, strlen(text));
+
     //Inserts new node
     newNode->next = _hashTable[address];
     _hashTable[address] = newNode;
@@ -41,7 +49,19 @@ HASH_NODE* hashInsert(int type, char* text){
     return newNode;
 }
 
-HASH_NODE hashFind(char* text){
+HASH_NODE* hashFind(char* text){
+
+    HASH_NODE *node = NULL;
+	int i;
+	for(i=0; i<HASH_SIZE; i++){
+		for(node=_hashTable[i]; node; node=node->next){
+			if(strcmp(text, node->text) == 0){
+				return node;
+			}
+		}	
+	}
+    node = NULL;
+	return node;
 }
 
 void hashPrint(){

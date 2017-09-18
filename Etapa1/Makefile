@@ -1,12 +1,17 @@
+etapa1: lex.yy.o main.o hash.o
+		gcc -o etapa1 lex.yy.o main.o hash.o
 
-etapa1: lex.yy.c main.o
-	gcc lex.yy.c -o etapa1
+main.o:	main.c
+		gcc -c main.c
 
-main.o: main.c
-	gcc main.c -c
+hash.o: hash.c
+		gcc -c hash.c 
+
+lex.yy.o: lex.yy.c
+		gcc -c lex.yy.c
 
 lex.yy.c: scanner.l
-	lex scanner.l
+		flex --header-file=lex.yy.h scanner.l
 
 clean:
-	rm etapa1 *.o
+	rm *.o lex.yy.c lex.yy.h etapa1
