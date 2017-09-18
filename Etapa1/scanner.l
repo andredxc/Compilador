@@ -7,19 +7,17 @@
 
     int isRunning();
     int getLineNumber();
-
+    char buf[1000];
+    char *s;
+    
     int running = 1;
     int lineNumber = 1;
 %}
 
 %x COMMENT
+%x STRING
 
 %%
-
-[ \t]                       {  }
-[\n]                        { lineNumber++; }
-
-
 
 "byte"                      { return KW_BYTE; }
 "short"                     { return KW_SHORT; }
@@ -41,21 +39,34 @@
 "!="                        { return OPERATOR_NE; }
 "&&"                        { return OPERATOR_AND; }
 "||"                        { return OPERATOR_OR; }
-[-+,;:(){}*<>=!&$#\\\/\[\]]	{ fprintf(stderr, "Operator: %s -- ", yytext); return yytext[0]; }
+[-+,;:(){}*<>=!&$#\\\/\[\]]	{ fprintf(stderr, "linha: %d Operator: %s -- ", getLineNumber(), yytext); return yytext[0]; }
 
-[a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); fprintf(stderr, "Identifier: %s -- ", yytext); return TK_IDENTIFIER; }
-[0-9]+                      { hashInsert(LIT_INTEGER, yytext); fprintf(stderr, "Integer: %s -- ", yytext); return LIT_INTEGER; }
-[0-9]+.[0-9]+               { hashInsert(LIT_REAL, yytext); fprintf(stderr, "Real: %s -- ", yytext); return LIT_REAL; }
-\'\\?[a-zA-Z0-9]\'          { hashInsert(LIT_CHAR, yytext); fprintf(stderr, "Char: %s -- ", yytext); return LIT_CHAR; }
-\".+\"                      { hashInsert(LIT_STRING, yytext); fprintf(stderr, "String: %s -- ", yytext); return LIT_STRING; }
+[a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); fprintf(stderr, "linha: %d Identifier: %s -- ", getLineNumber(), yytext); return TK_IDENTIFIER; }
+[0-9]+                      { hashInsert(LIT_INTEGER, yytext); fprintf(stderr, "linha: %d Integer: %s -- ", getLineNumber(), yytext); return LIT_INTEGER; }
+[0-9]+.[0-9]+               { hashInsert(LIT_REAL, yytext); fprintf(stderr, "linha: %d Real: %s -- ", getLineNumber(), yytext); return LIT_REAL; }
+'.'                         { hashInsert(LIT_CHAR, yytext); fprintf(stderr, "linha: %d Char: %s -- ", getLineNumber(), yytext); return LIT_CHAR; }
+\".+\"                      { hashInsert(LIT_STRING, yytext); fprintf(stderr, "linha: %d String: %s -- ", getLineNumber(), yytext); return LIT_STRING; }
 
-"//".*                      {  }
-"/*"                        { BEGIN(COMMENT); }
-<COMMENT>.                  {  }
-<COMMENT>"\n"               { lineNumber++; }
-<COMMENT>"*/"               { BEGIN(INITIAL); }
 
-.                           { return TOKEN_ERROR; }
+"\""					{BEGIN(STRING); s = buf; *s++ = *yytext; return LIT_STRING;}
+
+\n						{++lineNumber;}
+[ \t]
+"//".*                  {  }
+"/*"					{BEGIN(COMMENT); }
+
+<COMMENT>"*/" 			BEGIN(INITIAL);
+<COMMENT>.
+<COMMENT>\n				{++lineNumber;}
+
+<STRING>"\""			{*s++ = *yytext; *s = 0; hashInsert(LIT_STRING, buf); BEGIN(INITIAL);}
+<STRING>\\n				{*s++ = '\n';}
+<STRING>\\t     		{ *s++ = '\t'; }
+<STRING>\\\"			{*s++ = '\"';}
+<STRING>.				{*s++ = *yytext;}
+<STRING>\n				{++lineNumber; *s++ = '\n';}
+
+.                       { return TOKEN_ERROR; }
 
 %%
 
