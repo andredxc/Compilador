@@ -7,9 +7,15 @@
 
     char buf[1000];
     char *s;
-    
+
+    int startingLineNumber;
     int running = 1;
     int lineNumber = 1;
+
+    int getLineNumber();
+    int isRunning();
+
+    //\".+\"                      { hashInsert(LIT_STRING, yytext); fprintf(stderr, "linha: %d String: %s -- ", getLineNumber(), yytext); return LIT_STRING; }
 %}
 
 %x COMMENT
@@ -43,11 +49,8 @@
 [0-9]+                      { hashInsert(LIT_INTEGER, yytext); fprintf(stderr, "linha: %d Integer: %s -- ", getLineNumber(), yytext); return LIT_INTEGER; }
 [0-9]+.[0-9]+               { hashInsert(LIT_REAL, yytext); fprintf(stderr, "linha: %d Real: %s -- ", getLineNumber(), yytext); return LIT_REAL; }
 '.'                         { hashInsert(LIT_CHAR, yytext); fprintf(stderr, "linha: %d Char: %s -- ", getLineNumber(), yytext); return LIT_CHAR; }
-\".+\"                      { hashInsert(LIT_STRING, yytext); fprintf(stderr, "linha: %d String: %s -- ", getLineNumber(), yytext); return LIT_STRING; }
 
-
-"\""					{BEGIN(STRING); s = buf; *s++ = *yytext; return LIT_STRING;}
-
+"\""					{BEGIN(STRING); s = buf; *s++ = *yytext; startingLineNumber = getLineNumber();}
 \n						{++lineNumber;}
 [ \t]
 "//".*                  {  }
@@ -57,7 +60,7 @@
 <COMMENT>.
 <COMMENT>\n				{++lineNumber;}
 
-<STRING>"\""			{*s++ = *yytext; *s = 0; hashInsert(LIT_STRING, buf); BEGIN(INITIAL);}
+<STRING>"\""			{*s++ = *yytext; *s = 0; hashInsert(LIT_STRING, buf); BEGIN(INITIAL); fprintf(stderr, "String %s, linha %d\n", buf, startingLineNumber);return LIT_STRING;}
 <STRING>\\n				{*s++ = '\n';}
 <STRING>\\t     		{ *s++ = '\t'; }
 <STRING>\\\"			{*s++ = '\"';}
