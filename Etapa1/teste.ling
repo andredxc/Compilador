@@ -1,1 +1,3 @@
- "minha string"asfds" //ERRO AQUI
+ "minha string."
+
+ "minha \n string com \n."

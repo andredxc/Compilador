@@ -5,10 +5,6 @@
     #include "tokens.h"
     #include "hash.h"
 
-    char buf[1000];
-    char *s;
-
-    int startingLineNumber;
     int running = 1;
     int lineNumber = 1;
 
@@ -45,10 +41,10 @@
 
 [a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); fprintf(stderr, "linha: %d Identifier: %s -- ", getLineNumber(), yytext); return TK_IDENTIFIER; }
 [0-9]+                      { hashInsert(LIT_INTEGER, yytext); fprintf(stderr, "linha: %d Integer: %s -- ", getLineNumber(), yytext); return LIT_INTEGER; }
-[0-9]+\.[0-9]+               { hashInsert(LIT_REAL, yytext); fprintf(stderr, "linha: %d Real: %s -- ", getLineNumber(), yytext); return LIT_REAL; }
+[0-9]+\.[0-9]+              { hashInsert(LIT_REAL, yytext); fprintf(stderr, "linha: %d Real: %s -- ", getLineNumber(), yytext); return LIT_REAL; }
 '.'                         { hashInsert(LIT_CHAR, yytext); fprintf(stderr, "linha: %d Char: %s -- ", getLineNumber(), yytext); return LIT_CHAR; }
+\"[^"]*\"					{ hashInsert(LIT_STRING, yytext); fprintf(stderr, "linha: %d String: %s\n", getLineNumber(), yytext); return LIT_STRING; }
 
-"\""					{BEGIN(STRING); s = buf; *s++ = *yytext; startingLineNumber = getLineNumber();}
 \n						{++lineNumber;}
 [ \t]
 "//".*                  {  }
@@ -57,13 +53,6 @@
 <COMMENT>"*/" 			BEGIN(INITIAL);
 <COMMENT>.
 <COMMENT>\n				{++lineNumber;}
-
-<STRING>"\""			{*s++ = *yytext; *s = 0; hashInsert(LIT_STRING, buf); BEGIN(INITIAL); fprintf(stderr, "String %s, linha %d\n", buf, startingLineNumber);return LIT_STRING;}
-<STRING>\\n				{*s++ = '\n';}
-<STRING>\\t     		{ *s++ = '\t'; }
-<STRING>\\\"			{*s++ = '\"';}
-<STRING>.				{*s++ = *yytext;}
-<STRING>\n				{++lineNumber; *s++ = '\n';}
 
 .                       { return TOKEN_ERROR; }
 
