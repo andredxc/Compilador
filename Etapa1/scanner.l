@@ -5,8 +5,6 @@
     #include "tokens.h"
     #include "hash.h"
 
-    int isRunning();
-    int getLineNumber();
     char buf[1000];
     char *s;
     
