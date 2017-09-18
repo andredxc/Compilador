@@ -58,7 +58,7 @@ HASH_NODE* hashFind(char* text){
 			if(strcmp(text, node->text) == 0){
 				return node;
 			}
-		}	
+		}
 	}
     node = NULL;
 	return node;
@@ -71,7 +71,7 @@ void hashPrint(){
 
     for(i = 0; i < HASH_SIZE; i++){
         for(iter = _hashTable[i]; iter; iter = iter->next){
-            fprintf(stderr, "hashTable[%d] has type = %d and text = \"%s\"\n", i, iter->type, iter->text);
+            fprintf(stderr, "hashTable[%d] has type = %d and text = %s\n", i, iter->type, iter->text);
         }
     }
 }

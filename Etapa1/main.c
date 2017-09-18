@@ -5,11 +5,14 @@
 extern FILE* yyin;
 extern int yylex();
 extern int isRunning();
+extern int hashPrint();
+extern void hashInit();
 
 int main(){
 
 	int token;
 	yyin = fopen("teste.ling", "r");
+    hashInit();
 
 	while(isRunning()){
 
@@ -45,6 +48,7 @@ int main(){
 		}
 		//fprintf(stderr, "tok = %d\n", token);
 	}
-
+    fprintf(stderr, "------------------hashPrint()------------------\n");
+    hashPrint();
 	return 0;
 }
