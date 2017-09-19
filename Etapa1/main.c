@@ -1,3 +1,6 @@
+/*
+* André D. Carneiro e Victória Simonetti
+*/
 #include <stdio.h>
 #include "tokens.h"
 
@@ -6,13 +9,13 @@ extern FILE* yyin;
 extern int yylex();
 extern int isRunning();
 extern int hashPrint();
-extern void hashInit();
+extern int initMe();
 
 int main(){
 
 	int token;
 	yyin = fopen("teste.ling", "r");
-    hashInit();
+    initMe();
 
 	while(isRunning()){
 

@@ -1,4 +1,9 @@
+/*
+* André D. Carneiro e Victória Simonetti
+*/
 #include "hash.h"
+
+
 
 
 void hashInit(){

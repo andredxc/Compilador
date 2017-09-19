@@ -1,4 +1,7 @@
 %{
+    /*
+    * André D. Carneiro e Victória Simonetti
+    */
 
     #include <stdio.h>
 	#include <string.h>
@@ -10,6 +13,7 @@
 
     int getLineNumber();
     int isRunning();
+    void initMe();
 %}
 
 %x COMMENT
@@ -37,24 +41,23 @@
 "!="                        { return OPERATOR_NE; }
 "&&"                        { return OPERATOR_AND; }
 "||"                        { return OPERATOR_OR; }
-[-+,;:(){}*<>=!&$#\\\/\[\]]	{ fprintf(stderr, "linha: %d Operator: %s -- ", getLineNumber(), yytext); return yytext[0]; }
+[-+,;:(){}*<>=!&$#\\\/\[\]]	{ return yytext[0]; }
 
-[a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); fprintf(stderr, "linha: %d Identifier: %s -- ", getLineNumber(), yytext); return TK_IDENTIFIER; }
-[0-9]+                      { hashInsert(LIT_INTEGER, yytext); fprintf(stderr, "linha: %d Integer: %s -- ", getLineNumber(), yytext); return LIT_INTEGER; }
-[0-9]+\.[0-9]+              { hashInsert(LIT_REAL, yytext); fprintf(stderr, "linha: %d Real: %s -- ", getLineNumber(), yytext); return LIT_REAL; }
-'.'                         { hashInsert(LIT_CHAR, yytext); fprintf(stderr, "linha: %d Char: %s -- ", getLineNumber(), yytext); return LIT_CHAR; }
-\"[^"]*\"					{ hashInsert(LIT_STRING, yytext); fprintf(stderr, "linha: %d String: %s\n", getLineNumber(), yytext); return LIT_STRING; }
+[a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); return TK_IDENTIFIER; }
+[0-9]+                      { hashInsert(LIT_INTEGER, yytext); return LIT_INTEGER; }
+[0-9]+\.[0-9]+              { hashInsert(LIT_REAL, yytext); return LIT_REAL; }
+'.'                         { hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }
+\"(\\.|[^\\"])+\"		    { hashInsert(LIT_STRING, yytext); return LIT_STRING; }
 
 \n						{++lineNumber;}
-[ \t]
+[ \t]                   {  }
 "//".*                  {  }
-"/*"					{BEGIN(COMMENT); }
+"/*"					{ BEGIN(COMMENT); }
+.                       { return TOKEN_ERROR; }
 
 <COMMENT>"*/" 			BEGIN(INITIAL);
 <COMMENT>.
 <COMMENT>\n				{++lineNumber;}
-
-.                       { return TOKEN_ERROR; }
 
 %%
 
@@ -70,4 +73,8 @@ int isRunning(){
 
 int getLineNumber(){
     return lineNumber;
+}
+
+void initMe(){
+    hashInit();
 }
