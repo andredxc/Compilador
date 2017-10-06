@@ -2,6 +2,8 @@
 %{
     #include <stdio.h>
 
+    extern int getLineNumber();
+    int yylex();
     int yyerror(char* arg);
 %}
 
@@ -22,7 +24,7 @@
 %token OPERATOR_GE
 %token OPERATOR_EQ
 %token OPERATOR_NE
-%token OPERATOR_AND 
+%token OPERATOR_AND
 %token OPERATOR_OR
 %token TK_IDENTIFIER
 %token LIT_INTEGER
@@ -35,12 +37,13 @@
 
 program: decList
 	;
-	
+
 decList: dec decList
 	|
 	;
-	
+
 dec: globalVariableDec
+    | functionDec
 	;
 
 globalVariableDec: TK_IDENTIFIER ':' variableInfo ';'
@@ -59,16 +62,72 @@ variableInfo: KW_BYTE '=' LIT_CHAR
 	| KW_BYTE '[' LIT_INTEGER ']' intList
 	| KW_SHORT '[' LIT_INTEGER ']' LIT_STRING
 	;
-	
+
 intList: LIT_INTEGER intList
 	|
 	;
-	
+
 realList: LIT_REAL realList
 	|
 	;
 
+functionDec: '(' type ')' TK_IDENTIFIER '(' parameterList ')' comandBlock
 
+parameterList: parameter moreParameters
+    |
+    ;
+
+moreParameters: ',' parameter moreParameters
+    |
+    ;
+
+parameter: TK_IDENTIFIER ':' type
+    ;
+
+comandBlock: '{' comand moreComands '}'
+    |
+    ;
+
+moreComands: ';' comand moreComands
+    |
+    ;
+
+comand: expression
+    | attribution
+    | KW_READ '>' TK_IDENTIFIER
+    ;
+
+expression: '(' expression ')'
+    | expression operator expression
+    | TK_IDENTIFIER
+    | TK_IDENTIFIER '[' expression ']'
+    | LIT_INTEGER
+    | LIT_REAL
+    | LIT_CHAR
+    ;
+
+attribution: TK_IDENTIFIER '=' expression
+    | TK_IDENTIFIER '[' expression ']' '=' expression
+    ;
+
+type: KW_BYTE
+    | KW_SHORT
+    | KW_LONG
+    | KW_FLOAT
+    | KW_DOUBLE
+    ;
+
+operator: OPERATOR_LE
+    | OPERATOR_GE
+    | OPERATOR_EQ
+    | OPERATOR_NE
+    | OPERATOR_AND
+    | OPERATOR_OR
+    | '+'
+    | '-'
+    | '*'
+    | '/'
+    ;
 
 %%
 
