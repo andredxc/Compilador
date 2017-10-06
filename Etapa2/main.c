@@ -1,8 +1,9 @@
 /*
 * André D. Carneiro e Victória Simonetti
 */
+
 #include <stdio.h>
-#include "tokens.h"
+#include "y.tab.h"
 
 
 extern FILE* yyin;
@@ -17,15 +18,16 @@ int main(int argc, char **argv  ){
 	
 	if(argc < 2){
 	    fprintf(stderr, "Sem arquivo\n");
-	    return 0;
+	    return 1;
 	}
 	yyin = fopen(argv[1], "r");
 	if(!yyin){
 	    fprintf(stderr, "Erro abrindo arquivo\n");
-	    return 0;
+	    return 1;
 	}
     initMe();
 
+    /*
 	while(isRunning()){
 
 		token = yylex();
@@ -60,6 +62,10 @@ int main(int argc, char **argv  ){
 		}
 		//fprintf(stderr, "tok = %d\n", token);
 	}
+	*/
+	
+	yyparse();
+	
     fprintf(stderr, "------------------hashPrint()------------------\n");
     hashPrint();
 	return 0;

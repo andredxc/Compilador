@@ -1,4 +1,10 @@
 
+%{
+    #include <stdio.h>
+
+    int yyerror(char* arg);
+%}
+
 %token KW_BYTE
 %token KW_SHORT
 %token KW_LONG
@@ -23,14 +29,32 @@
 %token LIT_REAL
 %token LIT_CHAR
 %token LIT_STRING
+%token TOKEN_ERROR
 
 %%
 
-exp: KW_BYTE
+globalVariable: TK_IDENTIFIER ':' variableType '=' variableValue ';'
+            ;
+
+variableType: KW_BYTE
+    | KW_SHORT
+    | KW_LONG
+    | KW_FLOAT
+    | KW_DOUBLE
+    ;
+    
+variableValue: LIT_INTEGER
+    | LIT_REAL
+    | LIT_CHAR
+    | LIT_STRING
+    ;
+
 
 
 %%
 
-int yerror(char* arg){
-	
+int yyerror(char* arg){
+
+    fprintf(stderr, "Erro na linha %d\n", getLineNumber());
+    return 0;
 }

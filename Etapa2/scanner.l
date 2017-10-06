@@ -5,7 +5,7 @@
 
     #include <stdio.h>
 	#include <string.h>
-    #include "tokens.h"
+    #include "y.tab.h"
     #include "hash.h"
 
     int running = 1;
