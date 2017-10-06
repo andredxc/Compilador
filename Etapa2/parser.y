@@ -33,21 +33,40 @@
 
 %%
 
-globalVariable: TK_IDENTIFIER ':' variableType '=' variableValue ';'
-            ;
+program: decList
+	;
+	
+decList: dec decList
+	|
+	;
+	
+dec: globalVariableDec
+	;
 
-variableType: KW_BYTE
-    | KW_SHORT
-    | KW_LONG
-    | KW_FLOAT
-    | KW_DOUBLE
-    ;
-    
-variableValue: LIT_INTEGER
-    | LIT_REAL
-    | LIT_CHAR
-    | LIT_STRING
-    ;
+globalVariableDec: TK_IDENTIFIER ':' variableInfo ';'
+	;
+
+variableInfo: KW_BYTE '=' LIT_CHAR
+	| KW_BYTE '=' LIT_INTEGER
+	| KW_SHORT '=' LIT_INTEGER
+	| KW_LONG '=' LIT_INTEGER
+	| KW_FLOAT '=' LIT_REAL
+	| KW_DOUBLE '=' LIT_REAL
+	| KW_SHORT '[' LIT_INTEGER ']' intList
+	| KW_LONG '[' LIT_INTEGER ']' intList
+	| KW_FLOAT '[' LIT_INTEGER ']' realList
+	| KW_DOUBLE '[' LIT_INTEGER ']' realList
+	| KW_BYTE '[' LIT_INTEGER ']' intList
+	| KW_SHORT '[' LIT_INTEGER ']' LIT_STRING
+	;
+	
+intList: LIT_INTEGER intList
+	|
+	;
+	
+realList: LIT_REAL realList
+	|
+	;
 
 
 
