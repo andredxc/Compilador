@@ -33,10 +33,10 @@
 %token LIT_STRING
 %token TOKEN_ERROR
 
-%left OPERATOR_OR OPERATOR_AND 
-%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
-%left '-' '+'
 %left '*' '/'
+%left '-' '+'
+%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
+%left OPERATOR_OR OPERATOR_AND 
 %right '!'
 %%
  
@@ -162,7 +162,29 @@ na tabela da etapa1 representados com mais de um caractere. Expressões também 
 Finalmente, um operando possível de expressão é uma	chamada de função, feita pelo seu nome, seguido de lista de argumentos entre parênteses,
 separados por vírgula.		
 */
+
 expression: '(' expression ')'
+    | expression '-' expression
+    | expression '*' expression
+    | expression '/' expression
+    | expression '>' expression
+    | expression '<' expression
+    | expression OPERATOR_LE expression
+    | expression OPERATOR_GE expression
+    | expression OPERATOR_EQ expression
+    | expression OPERATOR_NE expression
+    | expression OPERATOR_AND expression
+    | expression OPERATOR_OR expression
+    | TK_IDENTIFIER
+    | TK_IDENTIFIER '[' expression ']'
+    | LIT_INTEGER
+    | LIT_REAL
+    | LIT_CHAR
+    | callFunc
+    | '!' expression
+    ;					
+
+/*expression: '(' expression ')'
     | expression operator expression
     | TK_IDENTIFIER
     | TK_IDENTIFIER '[' expression ']'
@@ -172,7 +194,8 @@ expression: '(' expression ')'
     | callFunc
     | '!' expression
     ;
-
+*/
+										;
 attribution: TK_IDENTIFIER '=' expression
     | TK_IDENTIFIER '[' expression ']' '=' expression
     ;
@@ -184,19 +207,20 @@ type: KW_BYTE
     | KW_DOUBLE
     ;
 
-operator: '+'
-    | '-'
-    | '*'
+/*operator: '*'
     | '/'
+    | '+'
+    | '-'
     | '>'
     | '<'
     | OPERATOR_LE
     | OPERATOR_GE
     | OPERATOR_EQ
     | OPERATOR_NE
-    | OPERATOR_AND
     | OPERATOR_OR
+    | OPERATOR_AND
     ;
+*/
 
 callFunc: TK_IDENTIFIER '(' listArg ')';
     ;
