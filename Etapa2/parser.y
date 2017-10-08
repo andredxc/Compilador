@@ -38,7 +38,6 @@
 %left '-' '+'
 %left '*' '/'
 %right '!'
-
 %%
  
 // Um programa é composto por um conjunto de declarações de funções	ou declarações de variáveis globais (podem aparecer em qualquer ordem)
@@ -127,7 +126,7 @@ moreComands: ';' comand moreComands
 
 
 /* O comando read é identificado pela palavra reservada read, seguida do símbolo '>' e de variável, na qual o valor lido da entrada padrão,
- se disponível e compatível, será	colocado. Somente variáveis	escalares são aceitas no comando input, e não vetores ou posições de vetores
+ se disponível e compatível, será colocado. Somente variáveis	escalares são aceitas no comando input, e não vetores ou posições de vetores
 */
 read: KW_READ '>' TK_IDENTIFIER
     ;
@@ -171,6 +170,7 @@ expression: '(' expression ')'
     | LIT_REAL
     | LIT_CHAR
     | callFunc
+    | '!' expression
     ;
 
 attribution: TK_IDENTIFIER '=' expression
@@ -184,19 +184,18 @@ type: KW_BYTE
     | KW_DOUBLE
     ;
 
-operator: OPERATOR_LE
-    | OPERATOR_GE
-    | OPERATOR_EQ
-    | OPERATOR_NE
-    | OPERATOR_AND
-    | OPERATOR_OR
-    | '+'
+operator: '+'
     | '-'
     | '*'
     | '/'
     | '>'
     | '<'
-    | '!'
+    | OPERATOR_LE
+    | OPERATOR_GE
+    | OPERATOR_EQ
+    | OPERATOR_NE
+    | OPERATOR_AND
+    | OPERATOR_OR
     ;
 
 callFunc: TK_IDENTIFIER '(' listArg ')';
