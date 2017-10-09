@@ -1,11 +1,14 @@
 
 %{
     #include <stdio.h>
+    #include "hash.h"
 
     extern int getLineNumber();
     int yylex();
     int yyerror(char* arg);
 %}
+
+%union{ hash_struct *symbol; }
 
 %token KW_BYTE
 %token KW_SHORT
@@ -26,20 +29,21 @@
 %token OPERATOR_NE
 %token OPERATOR_AND
 %token OPERATOR_OR
-%token TK_IDENTIFIER
-%token LIT_INTEGER
-%token LIT_REAL
-%token LIT_CHAR
-%token LIT_STRING
 %token TOKEN_ERROR
+%token <symbol> TK_IDENTIFIER
+%token <symbol> LIT_INTEGER
+%token <symbol> LIT_REAL
+%token <symbol> LIT_CHAR
+%token <symbol> LIT_STRING
+
 
 %left '*' '/'
 %left '-' '+'
 %left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
-%left OPERATOR_OR OPERATOR_AND 
+%left OPERATOR_OR OPERATOR_AND
 %right '!'
 %%
- 
+
 // Um programa é composto por um conjunto de declarações de funções	ou declarações de variáveis globais (podem aparecer em qualquer ordem)
 program: decList
 	;
@@ -55,8 +59,8 @@ dec: globalVariableDec
 // Todas as declarações de variáveis devem ser terminadas por ponto e vírgula
 // As variáveis são declaradas pela sequência de seu nome, dois-pontos, seu tipo, sinal de '=' e o valor de inicialização obrigatório
 // Declaração de vetores: definição	de seu tamanho inteiro positivo entre colchetes, colocada imediatamente à direita do tipo.
-//  	a inicialização	é opcional, e quando presente, será dada pela sequência de valores literais separados por caraceres em	
-//      branco,	entre o tamanho e o terminador ponto-e-vírgula.	
+//  	a inicialização	é opcional, e quando presente, será dada pela sequência de valores literais separados por caraceres em
+//      branco,	entre o tamanho e o terminador ponto-e-vírgula.
 globalVariableDec: TK_IDENTIFIER ':' variableInfo ';'
 	;
 
@@ -87,7 +91,9 @@ realList: LIT_REAL realList
 // seguido do nome da função e depois de uma lista entre parênteses, de parâmetros de entrada, separados por vírgula, onde cada parâmetro
 // é definido por nome, seguido de dois pontos e tipo, e não podem ser do tipo vetor. O corpo da função é composto por um bloco
 functionDec: '(' type ')' TK_IDENTIFIER '(' parameterList ')' comandBlock
-    parameterList: parameter moreParameters
+    ;
+
+parameterList: parameter moreParameters
     |
     ;
 
@@ -108,10 +114,10 @@ comand: comandBlock
     | print
     ;
 
-/* Um bloco de comandos é definido entre chaves, e consiste em uma sequência de comandos, separados por ponto-e-vírgula. 
+/* Um bloco de comandos é definido entre chaves, e consiste em uma sequência de comandos, separados por ponto-e-vírgula.
  O símbolo de ponto-e-vírgula está associado à lista de comandos presentes dentro de um bloco, e não a cada comando em si.
- Considerando que os comandos poderão aparecer recursivamente dentro de outros comandos, não é permitido que cada um deles venha 
- acompanhado de um ponto-e-vírgula adicional, mas apenas quando ocorrem na formação da lista dentro do bloco. Um bloco de comandos 
+ Considerando que os comandos poderão aparecer recursivamente dentro de outros comandos, não é permitido que cada um deles venha
+ acompanhado de um ponto-e-vírgula adicional, mas apenas quando ocorrem na formação da lista dentro do bloco. Um bloco de comandos
  é considerado como um comando único simples, recursivamente, e pode ser utilizado em qualquer construção que aceite um comando simples.
 */
 
@@ -142,7 +148,7 @@ listElem: LIT_STRING  tail_listElem
 
 tail_listElem: ',' LIT_STRING tail_listElem
 			| ',' expression tail_listElem
-			| 
+			|
 			;
 
 /* O comando return é identificado pela palavra reservada return seguida de uma expressão que dá o valor de retorno.*/
@@ -154,16 +160,17 @@ fluxControl: KW_IF '(' expression ')' KW_THEN comand
     | KW_WHILE '(' expression ')' comand
     ;
 
-/* As expressões aritméticas têm como folhas identificadores, opcionalmente seguidos de expressão inteira entre colchetes, ou podem ser 
+/* As expressões aritméticas têm como folhas identificadores, opcionalmente seguidos de expressão inteira entre colchetes, ou podem ser
 literais. As expressões aritméticas podem ser formadas recursivamente com operadores aritméticos, assim como permitem o uso de parênteses
 para associatividade. Expressões Lógicas (Booleanas) podem ser formadas através dos operadores relacionais aplicados a expressões aritméticas,
 ou de operadores lógicos aplicados a expressões lógicas, recursivamente. Os operadores válidos são:	+,-,*,/,<,>,! (lógico),	e os listados
 na tabela da etapa1 representados com mais de um caractere. Expressões também podem ser formadas considerando literais do tipo caractere.
 Finalmente, um operando possível de expressão é uma	chamada de função, feita pelo seu nome, seguido de lista de argumentos entre parênteses,
-separados por vírgula.		
+separados por vírgula.
 */
 
 expression: '(' expression ')'
+    | expression '+' expression
     | expression '-' expression
     | expression '*' expression
     | expression '/' expression
@@ -182,7 +189,7 @@ expression: '(' expression ')'
     | LIT_CHAR
     | callFunc
     | '!' expression
-    ;					
+    ;
 
 /*expression: '(' expression ')'
     | expression operator expression
@@ -226,7 +233,7 @@ callFunc: TK_IDENTIFIER '(' listArg ')';
     ;
 
 listArg: expression tailArg
-    | 
+    |
     ;
 
 tailArg: ',' expression tailArg

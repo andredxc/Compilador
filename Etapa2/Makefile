@@ -1,4 +1,4 @@
-etapa2: y.tab.o lex.yy.o main.o hash.o
+etapa2: hash.o y.tab.o lex.yy.o main.o
 	gcc -o etapa2 lex.yy.o main.o hash.o y.tab.o
 
 main.o:	main.c

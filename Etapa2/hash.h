@@ -4,9 +4,13 @@
 
 #define HASH_SIZE 997
 
-typedef struct hash_struct{
-	int type;
+typedef struct symbol{
+    int type;
 	char *text;
+} SYMBOL;
+
+typedef struct hash_struct{
+	struct symbol symbol;
 	struct hash_struct *next;
 } HASH_NODE;
 

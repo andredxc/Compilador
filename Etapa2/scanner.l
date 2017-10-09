@@ -5,8 +5,8 @@
 
     #include <stdio.h>
 	#include <string.h>
-    #include "y.tab.h"
     #include "hash.h"
+    #include "y.tab.h"
 
     int running = 1;
     int lineNumber = 1;
@@ -44,10 +44,10 @@
 [-+,;:(){}*<>=!&$#\\\/\[\]]	{ return yytext[0]; }
 
 [a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); return TK_IDENTIFIER; }
-[0-9]+                      { hashInsert(LIT_INTEGER, yytext); return LIT_INTEGER; }
-[0-9]+\.[0-9]+              { hashInsert(LIT_REAL, yytext); return LIT_REAL; }
-'.'                         { hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }
-\"(\\.|[^\\"])+\"		    { hashInsert(LIT_STRING, yytext); return LIT_STRING; }
+[0-9]+                      { yylval.symbol = hashInsert(LIT_INTEGER, yytext); return LIT_INTEGER; }
+[0-9]+\.[0-9]+              { yylval.symbol = hashInsert(LIT_REAL, yytext); return LIT_REAL; }
+'.'                         { yylval.symbol = hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }
+\"(\\.|[^\\"])+\"		    { yylval.symbol = hashInsert(LIT_STRING, yytext); return LIT_STRING; }
 
 \n						{++lineNumber;}
 [ \t]                   {  }

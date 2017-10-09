@@ -3,17 +3,17 @@
 a: short = 0;
 i: long = 0;
 v: long[10] 0 0 0 0 0 0 0 0 0 0;
+vector: long[10];
 mat: long[10];
 f: float = 10.55;
 c: byte = 'x';
 d: byte = 65;
 
-
 (long) main()
   {
   a = 10;
   v[2] = v[10-1];
-  
+
   if (!(a<10)) then
    ;
 
@@ -33,10 +33,10 @@ d: byte = 65;
     ;
   ;;;
   {;};
-  {};
+  {} ;
+  return (x)
   }
 
-(long) incn (x: long, n: long)
-  {return (x+n)}
-
 (short) voidfunc() {}
+
+(long) incn (x: long, n: long) {}

@@ -40,9 +40,9 @@ HASH_NODE* hashInsert(int type, char* text){
 
     //Initializes new node
     newNode = (HASH_NODE*) calloc(1, sizeof(HASH_NODE));
-    newNode->type = type;
-    newNode->text = (char*) calloc(strlen(text)+1, sizeof(char));
-    strncpy(newNode->text, text, strlen(text));
+    newNode->symbol.type = type;
+    newNode->symbol.text = (char*) calloc(strlen(text)+1, sizeof(char));
+    strncpy(newNode->symbol.text, text, strlen(text));
 
     //Inserts new node
     newNode->next = _hashTable[address];
@@ -57,7 +57,7 @@ HASH_NODE* hashFind(char* text){
 	int i;
 	for(i=0; i<HASH_SIZE; i++){
 		for(node=_hashTable[i]; node; node=node->next){
-			if(strcmp(text, node->text) == 0){
+			if(strcmp(text, node->symbol.text) == 0){
 				return node;
 			}
 		}
@@ -73,7 +73,7 @@ void hashPrint(){
 
     for(i = 0; i < HASH_SIZE; i++){
         for(iter = _hashTable[i]; iter; iter = iter->next){
-            fprintf(stderr, "hashTable[%d] has type = %d and text = %s\n", i, iter->type, iter->text);
+            fprintf(stderr, "hashTable[%d] has type = %d and text = %s\n", i, iter->symbol.type, iter->symbol.text);
         }
     }
 }
