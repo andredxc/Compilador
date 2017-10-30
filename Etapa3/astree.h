@@ -64,6 +64,7 @@
 #define AST_FUNC_ARG_LIST       49
 #define AST_ATTR                50
 #define AST_ATTR_VEC            51
+#define AST_PRINT_ARG2           52
 
 
 
@@ -72,6 +73,8 @@ typedef struct ast_node{
     struct ast_node* son[MAX_SONS];
     HASH_NODE* symbol;
 }AST_NODE;
+
+AST_NODE* ast;
 
 AST_NODE* astCreate(int type, HASH_NODE* node, AST_NODE* son0, AST_NODE* son1, AST_NODE* son2, AST_NODE* son3);
 void astPrint(AST_NODE* node, int level);
