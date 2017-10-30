@@ -15,11 +15,6 @@
     AST_NODE* ast;
 }
 
-%type <ast> expression
-%type <ast> callFunc
-%type <ast> read
-%type <ast> attribution
-%type <ast> listArg
 
 %token KW_BYTE
 %token KW_SHORT
@@ -42,11 +37,38 @@
 %token OPERATOR_AND
 %token OPERATOR_OR
 
-%token <symbol> TK_IDENTIFIER
-%token <symbol> LIT_INTEGER
-%token <symbol> LIT_REAL
-%token <symbol> LIT_CHAR
-%token <symbol> LIT_STRING
+%token<symbol> TK_IDENTIFIER
+%token<symbol> LIT_INTEGER
+%token<symbol> LIT_REAL
+%token<symbol> LIT_CHAR
+%token<symbol> LIT_STRING
+
+%type<ast> program
+%type<ast> decList
+%type<ast> dec
+%type<ast> globalVariableDec
+%type<ast> variableInfo
+%type<ast> intList
+%type<ast> realList
+%type<ast> functionDec
+%type<ast> parameterList
+%type<ast> moreParameters
+%type<ast> parameter
+%type<ast> comand
+%type<ast> comandBlock
+%type<ast> moreComands
+%type<ast> read
+%type<ast> print
+%type<ast> listElem
+%type<ast> tail_listElem
+%type<ast> return
+%type<ast> fluxControl
+%type<ast> expression
+%type<ast> attribution
+%type<ast> type
+%type<ast> callFunc
+%type<ast> listArg
+%type<ast> tailArg
 
 %token TOKEN_ERROR
 
@@ -59,73 +81,74 @@
 
 %%
 
-program: decList
+program: decList											{$$ = $1; astPrint($$,0); ast = $$;} 
 	;
 
-decList: dec decList
-	|
+decList: dec decList										{$$ = astCreate(AST_CJTODEC_ELEM,0,$1,$2,0,0);}
+	|														{$$ = 0;}
 	;
 
-dec: globalVariableDec
-    | functionDec
+dec: globalVariableDec										{$$ = $1;} 
+    | functionDec											{$$ = $1;} 
 	;
 
-globalVariableDec: TK_IDENTIFIER ':' variableInfo ';'
+globalVariableDec: TK_IDENTIFIER ':' variableInfo ';' 		{$$ = astCreate(AST_DEC_VAR_GLOB,$1,$3,0,0,0);}
 	;
 
-variableInfo: KW_BYTE '=' LIT_CHAR
-	| KW_BYTE '=' LIT_INTEGER
-	| KW_SHORT '=' LIT_INTEGER
-	| KW_LONG '=' LIT_INTEGER
-	| KW_FLOAT '=' LIT_REAL
-	| KW_DOUBLE '=' LIT_REAL
-	| KW_SHORT '[' LIT_INTEGER ']' intList
-	| KW_LONG '[' LIT_INTEGER ']' intList
-	| KW_FLOAT '[' LIT_INTEGER ']' realList
-	| KW_DOUBLE '[' LIT_INTEGER ']' realList
-	| KW_BYTE '[' LIT_INTEGER ']' intList
-	| KW_SHORT '[' LIT_INTEGER ']' LIT_STRING
+variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
+	| KW_BYTE '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
+	| KW_SHORT '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
+	| KW_LONG '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
+	| KW_FLOAT '=' LIT_REAL									{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
+	| KW_DOUBLE '=' LIT_REAL								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
+	| KW_SHORT '[' LIT_INTEGER ']' intList 					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
+	| KW_LONG '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
+	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
+	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
+	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
+	| KW_SHORT '[' LIT_INTEGER ']' LIT_STRING				{$$ = astCreate(AST_DEC_VEC_SEQ_LIT,$3,$1,$5,0,0);} 
 	;
 
-intList: LIT_INTEGER intList
-	|
+
+intList: LIT_INTEGER intList								{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
+	|														{$$ = 0;}
 	;
 
-realList: LIT_REAL realList
-	|
+realList: LIT_REAL realList									{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
+	|														{$$ = 0;}
 	;
 
-functionDec: '(' type ')' TK_IDENTIFIER '(' parameterList ')' comandBlock
+functionDec: '(' type ')' TK_IDENTIFIER '(' parameterList ')' comandBlock {$$ = astCreate(AST_DEC_FUNC,$4,$2,$6,$8,0);}
     ;
 
-parameterList: parameter moreParameters
-    |
+parameterList: parameter moreParameters						 {$$ = astCreate(AST_DEC_PARAM_VEC,0,$1,$2,0,0);}
+    |														{$$ = 0;}
     ;
 
-moreParameters: ',' parameter moreParameters
-    |
+moreParameters: ',' parameter moreParameters				{$$ = astCreate(AST_DEC_PARAM_VEC,0,$2,$3,0,0);}
+    |														{$$ = 0;}
     ;
 
-parameter: TK_IDENTIFIER ':' type
+parameter: TK_IDENTIFIER ':' type				{$$ = astCreate(AST_DEC_PARAM,$1,$3,0,0,0);}
     ;
 
-comand: comandBlock
-    | fluxControl
-    | attribution
-    | read
-    | return
-    | print
+comand: comandBlock								{$$ = $1;}
+    | fluxControl								{$$ = $1;}
+    | attribution								{$$ = $1;}
+    | read										{$$ = $1;}
+    | return									{$$ = $1;}
+    | print										{$$ = $1;}
     ;
 
-comandBlock: '{' comand moreComands '}'
-    |
+comandBlock: '{' comand moreComands '}'			{ $$ = astCreate(AST_DEC_COMMAND_BLOCK, 0, $2, $3, 0, 0); }
+    |											{$$ = 0;}
     ;
 
-moreComands: ';' comand moreComands
-    |
+moreComands: ';' comand moreComands				{ $$ = astCreate(AST_VEC_COMMAND_BLOCK, 0, $2, $3, 0, 0); }
+    |											{$$ = 0;}
     ;
 
-read: KW_READ '>' TK_IDENTIFIER             { $$ = astCreate(AST_READ, $3, 0, 0, 0, 0); }
+read: KW_READ '>' TK_IDENTIFIER             	{ $$ = astCreate(AST_READ, $3, 0, 0, 0, 0); }
     ;
 
 print: KW_PRINT listElem
@@ -161,12 +184,12 @@ expression: '(' expression ')'                  { $$ = $2; }
     | expression OPERATOR_NE expression         { $$ = astCreate(AST_NE, 0, $1, $3, 0, 0); }
     | expression OPERATOR_AND expression        { $$ = astCreate(AST_AND, 0, $1, $3, 0, 0); }
     | expression OPERATOR_OR expression         { $$ = astCreate(AST_OR, 0, $1, $3, 0, 0); }
-    | TK_IDENTIFIER                             { $$ = astCreate(AST_IDENTIFIER, $1, 0, 0, 0, 0); }
+    | TK_IDENTIFIER                             { $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
     | TK_IDENTIFIER '[' expression ']'          { $$ = astCreate(AST_ARRAY, $1, $3, 0, 0, 0); }
-    | LIT_INTEGER                               { $$ = astCreate(AST_LITINT, $1, 0, 0, 0, 0); }
-    | LIT_REAL                                  { $$ = astCreate(AST_LITREAL, $1, 0, 0, 0, 0); }
-    | LIT_CHAR                                  { $$ = astCreate(AST_LITCHAR, $1, 0, 0, 0, 0); }
-    | callFunc                                  { $$ = astCreate(AST_CALLFUNC, 0, $1, 0, 0, 0); }
+    | LIT_INTEGER                               { $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+    | LIT_REAL                                  { $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+    | LIT_CHAR                                  { $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+    | callFunc                                  {$$ = $1;}
     | '!' expression                            { $$ = astCreate(AST_NOT, 0, $2, 0, 0, 0); }
     ;
 
@@ -174,11 +197,11 @@ attribution: TK_IDENTIFIER '=' expression               { astPrint($3, 0); }
     | TK_IDENTIFIER '[' expression ']' '=' expression
     ;
 
-type: KW_BYTE
-    | KW_SHORT
-    | KW_LONG
-    | KW_FLOAT
-    | KW_DOUBLE
+type: KW_BYTE									{$$ = astCreate(AST_BYTE,0,0,0,0,0);}
+    | KW_SHORT									{$$ = astCreate(AST_SHORT,0,0,0,0,0);}
+    | KW_LONG									{$$ = astCreate(AST_LONG,0,0,0,0,0);}
+    | KW_FLOAT									{$$ = astCreate(AST_FLOAT,0,0,0,0,0);}
+    | KW_DOUBLE									{$$ = astCreate(AST_DOUBLE,0,0,0,0,0);}
     ;
 
 callFunc: TK_IDENTIFIER '(' listArg ')'        { $$ = astCreate(AST_CALLFUNC, $1, 0, $3, 0, 0); }
