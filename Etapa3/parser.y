@@ -81,34 +81,33 @@
 
 %%
 
-program: decList											{$$ = $1; astPrint($$,0); ast = $$;} 
+program: decList											{$$ = $1; /*ast = $$;*/}
 	;
 
 decList: dec decList										{$$ = astCreate(AST_CJTODEC_ELEM,0,$1,$2,0,0);}
 	|														{$$ = 0;}
 	;
 
-dec: globalVariableDec										{$$ = $1;} 
-    | functionDec											{$$ = $1;} 
+dec: globalVariableDec										{$$ = $1;}
+    | functionDec											{$$ = $1; astPrint($$, 0);}
 	;
 
 globalVariableDec: TK_IDENTIFIER ':' variableInfo ';' 		{$$ = astCreate(AST_DEC_VAR_GLOB,$1,$3,0,0,0);}
 	;
 
-variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
-	| KW_BYTE '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
-	| KW_SHORT '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
-	| KW_LONG '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
-	| KW_FLOAT '=' LIT_REAL									{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
-	| KW_DOUBLE '=' LIT_REAL								{$$ = astCreate(AST_DEC_VAR_INFO,$3,$1,0,0,0);}
-	| KW_SHORT '[' LIT_INTEGER ']' intList 					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
-	| KW_LONG '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
-	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
-	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
-	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_SEQ,$3,$1,$5,0,0);}
-	| KW_SHORT '[' LIT_INTEGER ']' LIT_STRING				{$$ = astCreate(AST_DEC_VEC_SEQ_LIT,$3,$1,$5,0,0);} 
+variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_BYTE,$3,0,0,0,0);}
+	| KW_BYTE '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_BYTE,$3,0,0,0,0);}
+	| KW_SHORT '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_SHORT,$3,0,0,0,0);}
+	| KW_LONG '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_LONG,$3,0,0,0,0);}
+	| KW_FLOAT '=' LIT_REAL									{$$ = astCreate(AST_DEC_VAR_FLOAT,$3,0,0,0,0);}
+	| KW_DOUBLE '=' LIT_REAL								{$$ = astCreate(AST_DEC_VAR_DOUBLE,$3,0,0,0,0);}
+	| KW_SHORT '[' LIT_INTEGER ']' intList 					{$$ = astCreate(AST_DEC_VEC_SHORT,$3,$5,0,0,0);}
+	| KW_LONG '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_LONG,$3,$5,0,0,0);}
+	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
+	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
+	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
+	//| KW_BYTE '[' LIT_INTEGER ']' LIT_STRING				{$$ = astCreate(AST_DEC_VEC_BYTE_STRING,$3,$1,$5,0,0);}
 	;
-
 
 intList: LIT_INTEGER intList								{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
 	|														{$$ = 0;}
@@ -140,35 +139,35 @@ comand: comandBlock								{$$ = $1;}
     | print										{$$ = $1;}
     ;
 
-comandBlock: '{' comand moreComands '}'			{ $$ = astCreate(AST_DEC_COMMAND_BLOCK, 0, $2, $3, 0, 0); }
+comandBlock: '{' comand moreComands '}'			{ $$ = astCreate(AST_COMMAND_BLOCK, 0, $2, $3, 0, 0); }
     |											{$$ = 0;}
     ;
 
 moreComands: ';' comand moreComands				{ $$ = astCreate(AST_VEC_COMMAND_BLOCK, 0, $2, $3, 0, 0); }
-    |											{$$ = 0;}
+    |											{ $$ = 0; }
     ;
 
 read: KW_READ '>' TK_IDENTIFIER             	{ $$ = astCreate(AST_READ, $3, 0, 0, 0, 0); }
     ;
 
-print: KW_PRINT listElem
+print: KW_PRINT listElem                        { $$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0); }
     ;
 
-listElem: LIT_STRING  tail_listElem
-            | expression tail_listElem
-            ;
-
-tail_listElem: ',' LIT_STRING tail_listElem
-			| ',' expression tail_listElem
-			|
-			;
-
-return: KW_RETURN expression
+listElem: LIT_STRING  tail_listElem             { $$ = astCreate(AST_PRINT_ARG, $1, 0, $2, 0, 0); }
+    | expression tail_listElem                  { $$ = astCreate(AST_PRINT_ARG, 0, $1, $2, 0, 0); }
     ;
 
-fluxControl: KW_IF '(' expression ')' KW_THEN comand
-    | KW_IF '(' expression ')' KW_THEN comand KW_ELSE comand
-    | KW_WHILE '(' expression ')' comand
+tail_listElem: ',' LIT_STRING tail_listElem     { $$ = astCreate(AST_PRINT_ARG, $2, 0, $3, 0, 0); }
+	| ',' expression tail_listElem              { $$ = astCreate(AST_PRINT_ARG, 0, $2, $3, 0, 0); }
+	|                                           { $$ = 0; }
+	;
+
+return: KW_RETURN expression                    { $$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0); }
+    ;
+
+fluxControl: KW_IF '(' expression ')' KW_THEN comand            { $$ = astCreate(AST_IF, 0, $3, $6, 0, 0); }
+    | KW_IF '(' expression ')' KW_THEN comand KW_ELSE comand    { $$ = astCreate(AST_IF_ELSE, 0, $3, $6, $8, 0); }
+    | KW_WHILE '(' expression ')' comand                        { $$ = astCreate(AST_WHILE, 0, $3, $5, 0, 0); }
     ;
 
 expression: '(' expression ')'                  { $$ = $2; }
@@ -193,8 +192,8 @@ expression: '(' expression ')'                  { $$ = $2; }
     | '!' expression                            { $$ = astCreate(AST_NOT, 0, $2, 0, 0, 0); }
     ;
 
-attribution: TK_IDENTIFIER '=' expression               { astPrint($3, 0); }
-    | TK_IDENTIFIER '[' expression ']' '=' expression
+attribution: TK_IDENTIFIER '=' expression               { $$ = astCreate(AST_ATTR, $1, $3, 0, 0, 0); }
+    | TK_IDENTIFIER '[' expression ']' '=' expression   { $$ = astCreate(AST_ATTR_VEC, $1, $3, $6, 0, 0); }
     ;
 
 type: KW_BYTE									{$$ = astCreate(AST_BYTE,0,0,0,0,0);}
@@ -207,12 +206,12 @@ type: KW_BYTE									{$$ = astCreate(AST_BYTE,0,0,0,0,0);}
 callFunc: TK_IDENTIFIER '(' listArg ')'        { $$ = astCreate(AST_CALLFUNC, $1, 0, $3, 0, 0); }
     ;
 
-listArg: expression tailArg
-    |
+listArg: expression tailArg                     { $$ = astCreate(AST_FUNC_ARG_LIST, 0, $1, $2, 0, 0); }
+    |                                           { $$ = 0; }
     ;
 
-tailArg: ',' expression tailArg
-    |
+tailArg: ',' expression tailArg                 { $$ = astCreate(AST_FUNC_ARG_LIST, 0, $2, $3, 0, 0); }
+    |                                           { $$ = 0; }
     ;
 
 %%

@@ -44,7 +44,7 @@
 "||"                        { return OPERATOR_OR; }
 [-+,;:(){}*<>=!&$#\\\/\[\]]	{ return yytext[0]; }
 
-[a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { hashInsert(TK_IDENTIFIER, yytext); return TK_IDENTIFIER; }
+[a-zA-Z_]+[ a-zA-Z_0-9]+[a-zA-Z_0-9]+|[a-zA-Z_]+[a-zA-Z_0-9]*    { yylval.symbol = hashInsert(TK_IDENTIFIER, yytext); return TK_IDENTIFIER; }
 [0-9]+                      { yylval.symbol = hashInsert(LIT_INTEGER, yytext); return LIT_INTEGER; }
 [0-9]+\.[0-9]+              { yylval.symbol = hashInsert(LIT_REAL, yytext); return LIT_REAL; }
 '.'                         { yylval.symbol = hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }

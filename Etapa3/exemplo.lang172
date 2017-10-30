@@ -5,19 +5,20 @@ i: long = 0;
 v: long[10] 0 0 0 0 0 0 0 0 0 0;
 vector: long[10];
 mat: long[10];
-f: float = 10.55;
+f: float = 10.0;
 c: byte = 'x';
 d: byte = 65;
 
-(long) main()
+(long) main(x: long, minha variavel: byte)
   {
   a = 10;
   v[2] = v[10-1];
 
+  print " Digite um numero: \n", variavel, "\n";
+
   if (!(a<10)) then
    ;
 
-  print " Digite um numero: \n";
   read > i;
   while (i<10)
     {
