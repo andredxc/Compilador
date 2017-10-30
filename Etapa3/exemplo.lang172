@@ -5,7 +5,7 @@ i: long = 0;
 v: long[10] 0 0 0 0 0 0 0 0 0 0;
 vector: long[10];
 mat: long[10];
-f: float = 10.0;
+f: float = 'c';
 c: byte = 'x';
 d: byte = 65;
 

@@ -53,13 +53,11 @@ void astPrint(AST_NODE* node, int level){
 			case AST_DEC_VAR_GLOB  : fprintf(stderr, "AST_DEC_VAR_GLOB"); break;
 			case AST_DEC_VEC_SEQ   : fprintf(stderr, "AST_DEC_VEC_SEQ"); break;
 			case AST_DEC_VEC       : fprintf(stderr, "AST_DEC_VEC"); break;
-			case AST_DEC_VAR_INFO  : fprintf(stderr, "AST_DEC_VAR_INFO"); break;
 			case AST_DEC_FUNC  : fprintf(stderr, "AST_DEC_FUNC"); break;
 			case AST_DEC_PARAM  : fprintf(stderr, "AST_DEC_PARAM"); break;
 			case AST_DEC_PARAM_VEC : fprintf(stderr, "AST_DEC_PARAM_VEC"); break;
 			case AST_COMMAND_BLOCK  : fprintf(stderr, "AST_COMMAND_BLOCK"); break;
 			case AST_VEC_COMMAND_BLOCK  : fprintf(stderr, "AST_VEC_COMMAND_BLOCK"); break;
-			case AST_DEC_VEC_SEQ_LIT  : fprintf(stderr, "AST_DEC_VEC_SEQ_LIT"); break;
             case AST_DEC_VAR_BYTE: fprintf(stderr, "AST_DEC_VAR_BYTE"); break;
             case AST_DEC_VAR_SHORT: fprintf(stderr, "AST_DEC_VAR_SHORT"); break;
             case AST_DEC_VAR_LONG: fprintf(stderr, "AST_DEC_VAR_LONG"); break;
@@ -70,7 +68,6 @@ void astPrint(AST_NODE* node, int level){
             case AST_DEC_VEC_FLOAT: fprintf(stderr, "AST_DEC_VEC_FLOAT"); break;
             case AST_DEC_VEC_DOUBLE: fprintf(stderr, "AST_DEC_VEC_DOUBLE"); break;
             case AST_DEC_VEC_BYTE: fprintf(stderr, "AST_DEC_VEC_BYTE"); break;
-            case AST_DEC_VEC_BYTE_STRING: fprintf(stderr, "AST_DEC_VEC_BYTE_STRING"); break;
             case AST_CALLFUNC: fprintf(stderr, "AST_CALLFUNC"); break;
             case AST_ATTR: fprintf(stderr, "AST_ATTR"); break;
             case AST_ATTR_VEC: fprintf(stderr, "AST_ATTR_VEC"); break;
@@ -81,6 +78,7 @@ void astPrint(AST_NODE* node, int level){
             case AST_WHILE: fprintf(stderr, "AST_WHILE"); break;
             case AST_FUNC_ARG_LIST: fprintf(stderr, "AST_FUNC_ARG_LIST"); break;
             case AST_RETURN: fprintf(stderr, "AST_RETURN"); break;
+
             default: break;
         }
         if(node->symbol){
@@ -228,26 +226,12 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			astreeProgram(node->son[1],output);
 			break;
 
-		/*
-		TODO: NAO SEI RESOLVER ISSO, TENTEI ADD UM NOVO TIPO MAS N CONSIGO PEGAR O LITERAL DO LIT_STRING, PQ O TIPO NOS JA COLOCAMOS COMO LIT_INTEGER
-		| KW_SHORT '[' LIT_INTEGER ']' LIT_STRING				{$$ = astCreate(AST_DEC_VEC_SEQ_LIT,$3,$1,$5,0,0);}
-		TALVES TENHAMOS QUE CRIAR UM:
-		value:
-		lit_string  {$$ = astCreate(AST_SYMBOL,$1,0,0,0,0);}
-		case AST_DEC_VEC_LIT:
-				astreeProgram(node->son[0],output);
-				fprintf(output, " [ %s ] ",node->symbol->symbol.text);
-				astreeProgram(node->son[1],output);
-				break;
-		*/
+		
 		case AST_DEC_VEC:
 			fprintf(output, "%s",node->symbol->symbol.text);
 			astreeProgram(node->son[0],output);
 			break;
-		case AST_DEC_VAR_INFO:
-			astreeProgram(node->son[0],output);
-			fprintf(output, "= %s", node->symbol->symbol.text);
-			break;
+		
 
 		case AST_DEC_FUNC:
 			fprintf(output, "(");
@@ -283,6 +267,52 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			astreeProgram(node->son[0],output);
 			astreeProgram(node->son[1],output);
 			break;
+		
+		case AST_DEC_VAR_BYTE:
+			fprintf(output, "byte = %s;",  node->symbol->symbol.text);
+			break;
+	
+		case AST_DEC_VAR_SHORT:
+			fprintf(output, "short = %s;",  node->symbol->symbol.text);
+			break;
+
+		case AST_DEC_VAR_LONG:
+			fprintf(output, "long = %s;",  node->symbol->symbol.text);
+			break;
+
+		case AST_DEC_VAR_FLOAT:
+			fprintf(output, "float = %s;",  node->symbol->symbol.text);
+			break;
+
+		case AST_DEC_VAR_DOUBLE:
+			fprintf(output, "double = %s;",  node->symbol->symbol.text);
+			break;
+
+		case AST_DEC_VEC_SHORT:
+			fprintf(output, "short [%s];",  node->symbol->symbol.text);
+			astreeProgram(node->son[0],output);
+			break;
+
+		case AST_DEC_VEC_LONG:
+			fprintf(output, "long [%s];",  node->symbol->symbol.text);
+			astreeProgram(node->son[0],output);
+			break;
+
+		case AST_DEC_VEC_FLOAT:
+			fprintf(output, "float [%s];",  node->symbol->symbol.text);
+			astreeProgram(node->son[0],output);
+			break;
+
+		case AST_DEC_VEC_DOUBLE:
+			fprintf(output, "double [%s];",  node->symbol->symbol.text);
+			astreeProgram(node->son[0],output);
+			break;
+
+		case AST_DEC_VEC_BYTE:
+			fprintf(output, "byte [%s];",  node->symbol->symbol.text);
+			astreeProgram(node->son[0],output);
+			break;
+
 
 	}
 }

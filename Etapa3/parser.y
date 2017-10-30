@@ -92,6 +92,7 @@ dec: globalVariableDec										{$$ = $1;}
     | functionDec											{$$ = $1; astPrint($$, 0);}
 	;
 
+
 globalVariableDec: TK_IDENTIFIER ':' variableInfo ';' 		{$$ = astCreate(AST_DEC_VAR_GLOB,$1,$3,0,0,0);}
 	;
 
@@ -106,7 +107,6 @@ variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_BYTE,$3,0,0
 	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
 	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
 	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
-	//| KW_BYTE '[' LIT_INTEGER ']' LIT_STRING				{$$ = astCreate(AST_DEC_VEC_BYTE_STRING,$3,$1,$5,0,0);}
 	;
 
 intList: LIT_INTEGER intList								{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
