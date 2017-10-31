@@ -1,0 +1,8 @@
+Arrumar problema quando existe um comando dentro de um if sem {
+
+ex: 
+
+	if(coisa) then
+		print "ofjasfij\n"
+
+
