@@ -174,7 +174,7 @@ fluxControl: KW_IF '(' expression ')' KW_THEN comand            {$$ = astCreate(
     | KW_WHILE '(' expression ')' comand                        {$$ = astCreate(AST_WHILE, 0, $3, $5, 0, 0);}
     ;
 
-expression: '(' expression ')'                  {$$ = $2;}
+expression: '(' expression ')'                  {$$ = astCreate(AST_EXPRESSION, 0, $2, 0, 0, 0);}//{$$ = $2;}
     | expression '+' expression                 {$$ = astCreate(AST_ADD, 0, $1, $3, 0, 0);}
     | expression '-' expression                 {$$ = astCreate(AST_SUB, 0, $1, $3, 0, 0);}
     | expression '*' expression                 {$$ = astCreate(AST_MUL, 0, $1, $3, 0, 0);}

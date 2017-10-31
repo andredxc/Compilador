@@ -79,6 +79,7 @@ void astPrint(AST_NODE* node, int level){
             case AST_WHILE: fprintf(stderr, "AST_WHILE"); break;
             case AST_FUNC_ARG_LIST: fprintf(stderr, "AST_FUNC_ARG_LIST"); break;
             case AST_RETURN: fprintf(stderr, "AST_RETURN"); break;
+            case AST_EXPRESSION: fprintf(stderr, "AST_EXPRESSION"); break;
 
             default: break;
         }
@@ -383,5 +384,13 @@ void astreeProgram(AST_NODE* node, FILE* output){
                 astreeProgram(node->son[1],output);
                 break;
             }
+            
+        case AST_EXPRESSION:
+            fprintf(output, "( ");
+			astreeProgram(node->son[0],output);
+			fprintf(output, ") ");
+			break;
+            
+            
 	}
 }
