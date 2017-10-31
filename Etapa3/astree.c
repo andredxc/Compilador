@@ -169,12 +169,13 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			fprintf(output, "]");
 			break;
 		case AST_NOT:
+            fprintf(output, "!(");
 			astreeProgram(node->son[0],output);
-			fprintf(output, "!");
+            fprintf(output, ")");
 			astreeProgram(node->son[1],output);
 			break;
 		case AST_READ:
-			fprintf(output, "read %s > ",node->symbol->symbol.text);
+			fprintf(output, "read > %s ",node->symbol->symbol.text);
 			break;
 		case AST_BYTE:
 			fprintf(output, "byte");
@@ -205,18 +206,14 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			fprintf(output, " [ %s ] ",node->symbol->symbol.text);
 			astreeProgram(node->son[1],output);
 			break;
-
-		
 		case AST_DEC_VEC:
-			fprintf(output, "%s",node->symbol->symbol.text);
+			fprintf(output, " %s ",node->symbol->symbol.text);
 			astreeProgram(node->son[0],output);
 			break;
-		
-
 		case AST_DEC_FUNC:
 			fprintf(output, "(");
 			astreeProgram(node->son[0],output);
-			fprintf(output, ")");
+			fprintf(output, ") ");
 			fprintf(output, "%s",node->symbol->symbol.text);
 			fprintf(output, "(");
 			astreeProgram(node->son[1],output);
@@ -225,18 +222,20 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			break;
 
 		case AST_DEC_PARAM:
-			fprintf(output, "%s :", node->symbol->symbol.text);
+			fprintf(output, "%s: ", node->symbol->symbol.text);
 			astreeProgram(node->son[0],output);
 			break;
 
 		case AST_DEC_PARAM_VEC:
-			fprintf(output, ",");
 			astreeProgram(node->son[0],output);
+            if(node->son[1]){
+                fprintf(output, ", ");
+            }
 			astreeProgram(node->son[1],output);
 			break;
 
 		case AST_COMMAND_BLOCK:
-			fprintf(output, "{");
+			fprintf(output, "{\n");
 			astreeProgram(node->son[0],output);
 			astreeProgram(node->son[1],output);
 			fprintf(output, "}");
@@ -247,11 +246,11 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			astreeProgram(node->son[0],output);
 			astreeProgram(node->son[1],output);
 			break;
-		
+
 		case AST_DEC_VAR_BYTE:
 			fprintf(output, "byte = %s",  node->symbol->symbol.text);
 			break;
-	
+
 		case AST_DEC_VAR_SHORT:
 			fprintf(output, "short = %s",  node->symbol->symbol.text);
 			break;
@@ -319,11 +318,18 @@ void astreeProgram(AST_NODE* node, FILE* output){
 		case AST_PRINT_ARG:
 			if(node->son[0]){
 				astreeProgram(node->son[0],output);
+                fprintf(output, ", ");
 				astreeProgram(node->son[1],output);
 			}else{
-				fprintf(output, "%s ",  node->symbol->symbol.text);
+				fprintf(output, "%s",  node->symbol->symbol.text);
+                if(node->son[1]){
+                    fprintf(output, ", ");
+                }
+                else{
+                    fprintf(output, " ");
+                }
 				astreeProgram(node->son[1],output);
-			}		
+			}
 			break;
 
 		case AST_PRINT_ARG2:
@@ -334,13 +340,14 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			}else{
 				fprintf(output, ", %s ",  node->symbol->symbol.text);
 				astreeProgram(node->son[1],output);
-			}		
+			}
 			break;
 
 
 		case AST_RETURN:
-			fprintf(output, "return ");
+			fprintf(output, "return (");
 			astreeProgram(node->son[0],output);
+            fprintf(output, ")");
 			break;
 
 		case AST_IF:
@@ -364,20 +371,17 @@ void astreeProgram(AST_NODE* node, FILE* output){
 			astreeProgram(node->son[0],output);
 			fprintf(output, ")");
 			astreeProgram(node->son[1],output);
-		
+
 			break;
 
 		case AST_FUNC_ARG_LIST:
-			if(node->son[0]){
-				astreeProgram(node->son[0],output);
-				astreeProgram(node->son[1],output);
-			}else{
-				fprintf(output, ", ",  node->symbol->symbol.text);
-				astreeProgram(node->son[1],output);
-				astreeProgram(node->son[2],output);
-			}				
-			break;
-
-
+            if(node->son[0]){
+                astreeProgram(node->son[0],output);
+                if(node->son[1]){
+                    fprintf(output, ", ");
+                }
+                astreeProgram(node->son[1],output);
+                break;
+            }
 	}
 }

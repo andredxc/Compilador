@@ -29,7 +29,6 @@ void main(int argc, char **argv  ){
     initMe();
     yyparse();
     fprintf(stderr, "Concluído com sucesso\n");
-    fprintf(stderr, "------------------hashPrint()------------------\n");
 
 	//hashPrint();
 	FILE* output = fopen(argv[2], "w+");
@@ -39,7 +38,7 @@ void main(int argc, char **argv  ){
 		exit(1);
 	}
 
-	astreeProgram(ast,output); 
+	astreeProgram(ast,output);
 	fclose(output);
 	exit(0);
 }
