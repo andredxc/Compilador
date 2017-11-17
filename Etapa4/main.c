@@ -7,6 +7,7 @@
 #include "astree.h"
 #include "hash.h"
 #include "y.tab.h"
+#include "semantic.h"
 
 extern FILE* yyin;
 extern int yylex();
@@ -35,10 +36,16 @@ void main(int argc, char **argv  ){
 
 	if(output == NULL){
 		fprintf(stderr, "%s", "Can't open output file. \n");
+        fclose(output);
 		exit(1);
 	}
 
 	astreeProgram(ast,output);
+    if(semanticFullCheck(ast) != 0){
+        //Erro semântico
+        fclose(output);
+        exit(4);
+    }
 	fclose(output);
 	exit(0);
 }

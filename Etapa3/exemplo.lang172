@@ -17,10 +17,8 @@ d: byte = 65;
 
   print "Digite um numero: \n", variavel, "\n";
 
-  if (!(a<10)) then{
+  if (!(a<10)) then
     print "Oi\n";
-};
-
   read > i;
   while (i<10)
     {

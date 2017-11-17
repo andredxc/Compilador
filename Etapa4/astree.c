@@ -24,7 +24,7 @@ void astPrint(AST_NODE* node, int level){
     if(node){
         //Adiciona identação
         for(i=0; i < level; i++){
-            fprintf(stderr, "  ");
+            fprintf(stderr, "   ");
         }
         //Faz
         switch (node->type) {
@@ -384,13 +384,13 @@ void astreeProgram(AST_NODE* node, FILE* output){
                 astreeProgram(node->son[1],output);
                 break;
             }
-            
+
         case AST_EXPRESSION:
             fprintf(output, "( ");
 			astreeProgram(node->son[0],output);
 			fprintf(output, ") ");
 			break;
-            
-            
+
+
 	}
 }

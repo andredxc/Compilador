@@ -1,5 +1,5 @@
-etapa3: astree.o y.tab.o lex.yy.o hash.o main.o
-	gcc -o etapa4 y.tab.o lex.yy.o hash.o astree.o main.o
+etapa3: astree.o y.tab.o lex.yy.o hash.o semantic.o main.o
+	gcc -o etapa4 y.tab.o lex.yy.o hash.o astree.o semantic.o main.o
 
 main.o:	main.c
 	gcc -c main.c
@@ -15,6 +15,9 @@ y.tab.o: y.tab.c
 
 astree.o:
 	gcc -c astree.c
+
+semantic.o:
+	gcc -c semantic.c
 
 y.tab.c: parser.y
 	yacc -d -v parser.y
