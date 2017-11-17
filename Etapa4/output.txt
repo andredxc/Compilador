@@ -1,0 +1,40 @@
+a : short = 0;
+i : long = 0;
+v : long [10] 0  0  0  0  0  0  0  0  0  0 ;
+vector : long [10];
+mat : long [10];
+f : float = 0;
+c : byte = 'x';
+d : byte = 65;
+(long) main(x: long, minha variavel: byte){
+a = 10;
+v [ 2 ] = v [10-1];
+b = ( 4*( 2+var+4) ) /( 2-1) ;
+print "Digite um numero: \n", variavel, "\n" ;
+if ( !(( a<10) )) then print "Oi\n" ;
+read > i ;
+while ( i<10){
+a = incn (a, 1, 2, 2, 2);
+a = function ();
+i = 2*3+1*( i+3+2) +1};
+print "Incrementado algumas vezes fica ", a, "\n" ;
+if ( a==5) then {
+print "Parou no meio\n" ;
+};
+if ( a==11) then ;
+if ( a==11) then {
+} else ;
+;
+;
+;
+{
+;
+};
+{
+};
+return (( x) )}(short) voidfunc(){
+}(long) incn(x: long, n: long, y: long, x: long, n: long, y: long){
+}(long) incn2(x: long, n: long, y: long, x: long, n: long){
+}(long) incn3(x: long, n: long, y: long, y: long){
+}(long) incn4(x: long, n: long, y: long){
+}

@@ -27,6 +27,7 @@ typedef struct symbol{
     int type;
     int nature;     //variavel, função, array
     int dataType;   //short, long, float, double, byte
+	int numParams; //número de parametros de uma função
 	char *text;
 }SYMBOL;
 

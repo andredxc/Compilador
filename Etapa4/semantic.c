@@ -10,6 +10,7 @@ int semanticFullCheck(AST_NODE* astree){
 
     semanticCheckDeclarations(astree);
     semanticCheckFunctionDeclarations(astree);
+	checkAstNodeDataType(astree);
 }
 
 void semanticCheckDeclarations(AST_NODE* node){
@@ -175,6 +176,8 @@ void semanticCheckFunctionDeclarations(AST_NODE* node){
                         fprintf(stderr, "Erro interno em semanticCheckFunctionDeclarations()\n");
                         _errorStatus = 1;
                 }
+				// contabiliza o número de parâmetros quando a função é declarada
+				node->symbol->symbol.numParams = countFuncNumParams(node)-1;
             }
         }
 
@@ -183,3 +186,59 @@ void semanticCheckFunctionDeclarations(AST_NODE* node){
         }
     }
 }
+
+int countFuncNumParams(AST_NODE *node){
+	if(!node){ // if NULL = end of list
+		return 0;
+	}else{
+		return 1 + countFuncNumParams(node->son[1]);
+	}
+}
+
+
+/* Verifica os tipos dos nodos e trata */
+void checkAstNodeDataType(AST_NODE* node){
+
+	if(node == NULL){
+		return;
+	}
+
+	int i;
+	for(i=0; i<MAX_SONS; i++){
+		checkAstNodeDataType(node->son[i]);
+	}
+
+	switch(node->type){
+		case AST_CALLFUNC: verifyParams(node); break;
+		default: break;
+	}
+
+}
+
+/* Verifica se o parâmetro tem o mesmo número de itens da declaração e se os tipos são compatíveis. */
+void verifyParams(AST_NODE* node){
+
+	int numParam = 0;
+	if(node->son[0]){
+		verifyTypeFuncCallParams(node->son[0]);	
+		numParam = countFuncNumParams(node->son[0]);
+	}	
+
+	HASH_NODE* hash = hashFind(node->symbol->symbol.text);
+	int correct_n_par = hash->symbol.numParams;
+	if(numParam != correct_n_par){
+		fprintf(stderr, "Número invalido de parâmetros na chamada da função [%s]\n", node->symbol->symbol.text);
+	}
+}
+
+/* Verifica se os tipos dos parametros passados em uma FUNCAO são compativeis com a declaração. */
+int verifyTypeFuncCallParams(AST_NODE* node){
+	if(!node){
+		return 1;
+	}
+	//TODO: verificar se uma variavel na chamada da função existe?
+
+
+	
+}
+

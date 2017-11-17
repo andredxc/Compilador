@@ -23,7 +23,7 @@ d: byte = 65;
   read > i;
   while (i<10)
     {
-    a = incn(a,1,2,3,4);
+    a = incn(a,1,2,2,2);
     a = function();
     i = 2*3+1*(i+3+2) + 1
     };
@@ -44,4 +44,11 @@ d: byte = 65;
 (short) voidfunc() {}
 
 
-(long) incn (x: long, n: long) {}
+(long) incn (x: long, n: long, y: long, x: long, n: long, y: long) {}
+(long) incn2 (x: long, n: long, y: long, x: long, n: long) {}
+(long) incn3 (x: long, n: long, y: long, y: long) {}
+(long) incn4 ( x: long, n: long, y: long) {}
+
+
+
+
