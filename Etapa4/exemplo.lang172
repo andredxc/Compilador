@@ -19,6 +19,7 @@ d: byte = 65;
 
   if (!(a<10)) then
     print "Oi\n";
+
   read > i;
   while (i<10)
     {

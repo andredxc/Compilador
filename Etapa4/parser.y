@@ -50,6 +50,7 @@
 %type<ast> variableInfo
 %type<ast> intList
 %type<ast> realList
+%type<ast> charList
 %type<ast> functionDec
 %type<ast> parameterList
 %type<ast> moreParameters
@@ -111,6 +112,7 @@ variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_BYTE,$3,0,0
 	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
 	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
 	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
+    | KW_BYTE '[' LIT_INTEGER ']' charList                  {$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
 	;
 
 intList: LIT_INTEGER intList								{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
@@ -120,6 +122,10 @@ intList: LIT_INTEGER intList								{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
 realList: LIT_REAL realList									{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
 	|														{$$ = 0;}
 	;
+
+charList: LIT_CHAR charList                                 {$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
+    |                                                       {$$ = 0;}
+    ;
 
 functionDec: '(' type ')' TK_IDENTIFIER '(' parameterList ')' comandBlock {$$ = astCreate(AST_DEC_FUNC,$4,$2,$6,$8,0);}
     ;
@@ -222,6 +228,6 @@ tailArg: ',' expression tailArg                 {$$ = astCreate(AST_FUNC_ARG_LIS
 
 void yyerror(char* arg){
 
-    fprintf(stderr, "Erro na linha %d\n", getLineNumber());
+    fprintf(stderr, "Erro sintático na linha %d\n", getLineNumber());
     exit(3);
 }
