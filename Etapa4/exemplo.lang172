@@ -40,6 +40,8 @@ d: byte = 65;
   return (x)
   }
 
+
 (short) voidfunc() {}
+
 
 (long) incn (x: long, n: long) {}

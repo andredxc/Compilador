@@ -24,7 +24,7 @@ void astPrint(AST_NODE* node, int level){
     if(node){
         //Adiciona identação
         for(i=0; i < level; i++){
-            fprintf(stderr, "   ");
+            fprintf(stderr, "  ");
         }
         //Faz
         switch (node->type) {

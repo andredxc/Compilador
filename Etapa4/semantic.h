@@ -5,5 +5,6 @@
 
 int semanticFullCheck(AST_NODE* astree);
 void semanticCheckDeclarations(AST_NODE* astree);
+void semanticCheckFunctionDeclarations(AST_NODE* node);
 
 #endif

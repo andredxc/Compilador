@@ -9,6 +9,7 @@ int semanticFullCheck(AST_NODE* astree){
     _errorStatus = 0;
 
     semanticCheckDeclarations(astree);
+    semanticCheckFunctionDeclarations(astree);
 }
 
 void semanticCheckDeclarations(AST_NODE* node){
@@ -125,6 +126,60 @@ void semanticCheckDeclarations(AST_NODE* node){
 
         for(i=0; i < MAX_SONS; i++){
             semanticCheckDeclarations(node->son[i]);
+        }
+    }
+}
+
+void semanticCheckFunctionDeclarations(AST_NODE* node){
+
+    int i;
+
+    if(node){
+
+        if(node->type == AST_DEC_FUNC){
+
+            if(node->symbol->symbol.isDeclared != 0){
+                //Função já declarada
+                fprintf(stderr, "ERRO, função %s já foi declarada\n", node->symbol->symbol.text);
+                _errorStatus = 1;
+            }
+            else{
+                //Salvando tipo da função (tipo do retorno)
+                switch(node->son[0]->type){
+                    case AST_SHORT:
+                        node->symbol->symbol.dataType = DATATYPE_SHORT;
+                        node->symbol->symbol.nature = NATURE_FUNCTION;
+                        node->symbol->symbol.isDeclared = 1;
+                        break;
+                    case AST_LONG:
+                        node->symbol->symbol.dataType = DATATYPE_LONG;
+                        node->symbol->symbol.nature = NATURE_FUNCTION;
+                        node->symbol->symbol.isDeclared = 1;
+                        break;
+                    case AST_FLOAT:
+                        node->symbol->symbol.dataType = DATATYPE_FLOAT;
+                        node->symbol->symbol.nature = NATURE_FUNCTION;
+                        node->symbol->symbol.isDeclared = 1;
+                        break;
+                    case AST_DOUBLE:
+                        node->symbol->symbol.dataType = DATATYPE_DOUBLE;
+                        node->symbol->symbol.nature = NATURE_FUNCTION;
+                        node->symbol->symbol.isDeclared = 1;
+                        break;
+                    case AST_BYTE:
+                        node->symbol->symbol.dataType = DATATYPE_BYTE;
+                        node->symbol->symbol.nature = NATURE_FUNCTION;
+                        node->symbol->symbol.isDeclared = 1;
+                        break;
+                    default:
+                        fprintf(stderr, "Erro interno em semanticCheckFunctionDeclarations()\n");
+                        _errorStatus = 1;
+                }
+            }
+        }
+
+        for(i=0; i < MAX_SONS; i++){
+            semanticCheckFunctionDeclarations(node->son[i]);
         }
     }
 }
