@@ -11,7 +11,6 @@ int semanticSetOperatorsResultType(AST_NODE* node);
 void semanticCheckFunctionCalls(AST_NODE* node);
 void verifyParams(AST_NODE* node);
 int countFuncNumParams(AST_NODE *node);
-void checkAstNodeDataType(AST_NODE* node);
-int verifyTypeFuncCallParams(AST_NODE* node);
+void verifyTypeFuncCallParams(AST_NODE* node);
 
 #endif
