@@ -17,7 +17,7 @@ astree.o:
 	gcc -c astree.c
 
 semantic.o:
-	gcc -c semantic.c
+	gcc -c semantic.c -g
 
 y.tab.c: parser.y
 	yacc -d -v parser.y

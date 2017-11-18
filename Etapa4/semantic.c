@@ -10,6 +10,7 @@ int semanticFullCheck(AST_NODE* astree){
 
     semanticCheckDeclarations(astree);
     semanticCheckFunctionDeclarations(astree);
+    semanticCheckAttributions(astree);
     semanticCheckFunctionCalls(astree);
     checkAstNodeDataType(astree);
 
@@ -87,7 +88,7 @@ void semanticCheckDeclarations(AST_NODE* node){
                 }
 
                 if(node->son[0]->type == AST_DEC_VEC_SHORT){
-                    node->symbol->symbol.dataType = DATATYPE_DOUBLE;
+                    node->symbol->symbol.dataType = DATATYPE_SHORT;
                     node->symbol->symbol.nature = NATURE_ARRAY;
                 }
                 else if(node->son[0]->type == AST_DEC_VEC_LONG){
@@ -174,73 +175,195 @@ void semanticCheckFunctionDeclarations(AST_NODE* node){
     }
 }
 
-/* NÃO ESTA PRONTA*/
-void semanticSetOperatorsResultType(AST_NODE* node){
+void semanticCheckAttributions(AST_NODE* node){
 
-    fprintf(stderr, "EU NÃO ESTOU PRONTA, NÃO ME CHAME\n");
+    int i, expDataType;
 
-    int i;
+    if(!node){
+        return;
+    }
 
-    // AST_ADD
-    // AST_MUL
-    // AST_DIV
-    // AST_SUB
-    // AST_LESS
-    // AST_GREATER
-    // AST_LE
-    // AST_GE
-    // AST_EQ
-    // AST_NE
-    // AST_AND
-    // AST_OR
-    // AST_NOT
+    if(node->type == AST_ATTR){
+        //Atribuição de variáveis
+        expDataType = semanticSetOperatorsResultType(node->son[0]);
+        if(expDataType == DATATYPE_BOOLEAN){
+            fprintf(stderr, "ERRO, expressão atribuída à [%s] não pode ter tipo booleano\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        fprintf(stderr, "EXPRESSÃO ATRIBUIDA A [%s] É: ", node->symbol->symbol.text);
+        switch (expDataType){
+            case DATATYPE_SHORT:fprintf(stderr, "SHORT\n"); break;
+            case DATATYPE_LONG:fprintf(stderr, "LONG\n"); break;
+            case DATATYPE_FLOAT:fprintf(stderr, "FLOAT\n"); break;
+            case DATATYPE_DOUBLE:fprintf(stderr, "DOUBLE\n"); break;
+            case DATATYPE_BYTE:fprintf(stderr, "BYTE\n"); break;
+            default: fprintf(stderr, "NÃO DEFINIDA\n");
+        }
+    }
 
-    if(node){
+    for(i=0; i < MAX_SONS; i++){
+        semanticCheckAttributions(node->son[i]);
+    }
+}
 
-        if(node->type == AST_ADD || node->type == AST_SUB || node->type == AST_MUL || node->type == AST_DIV ||
-            node->type == AST_LESS || node->type == AST_GREATER || node->type == AST_LE || node->type == AST_GE ||
-            node->type == AST_EQ || node->type == AST_NE || node->type == AST_AND || node->type == AST_OR ||
-            node->type == AST_OR){
-            //Definições gerais para todos os operadores
-            if(node->symbol->symbol.dataType >= 0){
-                fprintf(stderr, "ERRO, tipo resultante dos operadores já foi definido\n");
-                return;
+int semanticSetOperatorsResultType(AST_NODE* node){
+
+    int i, arrayIndexDataType;
+
+    if(!node){
+        return -1;
+    }
+
+    int son0Type, son1Type;
+
+    if(node->symbol && node->type == AST_SYMBOL){
+        //O nodo é um símbolo
+        if(node->symbol->symbol.nature == NATURE_ARRAY){
+            fprintf(stderr, "ERRO, uso indevido do vetor [%s]\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        else if(node->symbol->symbol.nature == NATURE_FUNCTION){
+            fprintf(stderr, "ERRO, uso indevido da função [%s]\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        if(node->symbol->symbol.dataType >= 0){
+            //Seu tipo já foi definido
+            return node->symbol->symbol.dataType;
+        }
+        else{
+            if(node->symbol->symbol.type == LIT_INTEGER){
+                return DATATYPE_BYTE;
             }
-
-            if(node->type == AST_ADD || node->type == AST_SUB || node->type == AST_MUL || node->type == AST_DIV){
-                //Operadores aritméticos
-
-                if(node->son[0]->symbol->symbol.nature == NATURE_VARIABLE && node->son[1]->symbol->symbol.nature == NATURE_VARIABLE){
-                    //Ambos os operandos são variáveis
-                    if(node->son[0]->symbol->symbol.dataType == node->son[1]->symbol->symbol.dataType){
-                        //Os operandos têm os mesmo dataType
-                        switch(node->son[0]->symbol->symbol.dataType){
-                            case DATATYPE_SHORT: node->symbol->symbol.dataType = DATATYPE_SHORT;
-                            case DATATYPE_LONG: node->symbol->symbol.dataType = DATATYPE_LONG;
-                            case DATATYPE_FLOAT: node->symbol->symbol.dataType = DATATYPE_FLOAT;
-                            case DATATYPE_DOUBLE: node->symbol->symbol.dataType = DATATYPE_DOUBLE;
-                            case DATATYPE_BYTE: node->symbol->symbol.dataType = DATATYPE_BYTE;
-                            default: fprintf(stderr, "Erro interno em %s\n", __FUNCTION__);
-                        }
-                    }
-                    else if((node->son[0]->symbol->symbol.dataType == DATATYPE_FLOAT || node->son[0]->symbol->symbol.dataType == DATATYPE_DOUBLE) &&
-                        (node->son[1]->symbol->symbol.dataType == DATATYPE_SHORT || node->son[1]->symbol->symbol.dataType == DATATYPE_LONG ||
-                        node->son[1]->symbol->symbol.dataType == DATATYPE_BYTE)){
-                        //O operando da esquerda é real enquanto o da direita é inteiro
-
-                    }
-                    else if((node->son[1]->symbol->symbol.dataType == DATATYPE_FLOAT || node->son[1]->symbol->symbol.dataType == DATATYPE_DOUBLE) &&
-                        (node->son[0]->symbol->symbol.dataType == DATATYPE_SHORT || node->son[0]->symbol->symbol.dataType == DATATYPE_LONG ||
-                        node->son[0]->symbol->symbol.dataType == DATATYPE_BYTE)){
-                        //O operando da direita é real enquanto o da esquerda é inteiro
-
-                    }
-                }
+            else if(node->symbol->symbol.type == LIT_REAL){
+                return DATATYPE_FLOAT;
+            }
+            else{
+                fprintf(stderr, "ERRO, tipo não permitido encontrado em expressão [%s]\n", node->symbol->symbol.text);
+                _errorStatus = 1;
             }
         }
+    }
+    else if(node->symbol && node->type == AST_ARRAY){
+        //O nodo é um acesso a vetor
+        arrayIndexDataType = semanticSetOperatorsResultType(node->son[0]);
+        if(arrayIndexDataType != DATATYPE_BYTE && arrayIndexDataType != DATATYPE_SHORT && arrayIndexDataType != DATATYPE_LONG){
+            //Indice inválido
+            fprintf(stderr, "ERRO, acesso ao vetor [%s] possui índice não inteiro\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+            return node->symbol->symbol.dataType;
+        }
+    }
+    else if(node->symbol && node->type == AST_CALLFUNC){
+        //Verificar parâmetros???
+        return node->symbol->symbol.dataType;
+    }
+    else{
+        //Encontrar o tipo do nodo a partir de seus filhos
+        if(node->type == AST_ADD || node->type == AST_SUB || node->type == AST_MUL || node->type == AST_DIV){
+            //Expressões aritméticas
+            son0Type = semanticSetOperatorsResultType(node->son[0]);
+            son1Type = semanticSetOperatorsResultType(node->son[1]);
 
-        for(i=0; i < MAX_SONS; i++){
-            semanticSetOperatorsResultType(node->son[i]);
+            if(son0Type == son1Type){
+                //Lado esquerdo e direito são iguais
+                if(son0Type == DATATYPE_SHORT){
+                    //Ambos são short
+                    return DATATYPE_SHORT;
+                }
+                else if(son0Type == DATATYPE_LONG){
+                    //Ambos são long
+                    return DATATYPE_LONG;
+                }
+                else if(son0Type == DATATYPE_FLOAT){
+                    //Ambos são float
+                    return DATATYPE_FLOAT;
+                }
+                else if(son0Type == DATATYPE_DOUBLE){
+                    //Ambos são double
+                    return DATATYPE_DOUBLE;
+                }
+                else if(son0Type == DATATYPE_BYTE){
+                    //Ambos são byte
+                    return DATATYPE_BYTE;
+                }
+                else{
+                    fprintf(stderr, "Erro interno em %s\n", __FUNCTION__);
+                    _errorStatus = 1;
+                }
+            }
+            else if(son0Type == DATATYPE_FLOAT && son1Type == DATATYPE_DOUBLE){
+                //Lado esquerdo é float e lado direito é double
+                return DATATYPE_DOUBLE;
+            }
+            else if(son1Type == DATATYPE_FLOAT && son0Type == DATATYPE_DOUBLE){
+                //Lado esquerdo é double e lado direito é float
+                return DATATYPE_DOUBLE;
+            }
+            else if(son0Type == DATATYPE_FLOAT &&
+                (son1Type == DATATYPE_SHORT || son1Type == DATATYPE_LONG ||
+                son1Type == DATATYPE_BYTE)){
+                //Lado esquerdo é float e lado direito é inteiro
+                return DATATYPE_FLOAT;
+            }
+            else if(son1Type == DATATYPE_FLOAT &&
+                (son0Type == DATATYPE_SHORT || son0Type == DATATYPE_LONG ||
+                son0Type == DATATYPE_BYTE)){
+                //Lado esquerdo é inteiro e lado direito é float
+                return DATATYPE_FLOAT;
+            }
+            else if(son0Type == DATATYPE_DOUBLE &&
+                (son1Type == DATATYPE_SHORT || son1Type == DATATYPE_LONG ||
+                son1Type == DATATYPE_BYTE)){
+                //Lado esquerdo é double e lado direito é inteiro
+                return DATATYPE_DOUBLE;
+            }
+            else if(son1Type == DATATYPE_DOUBLE &&
+                (son0Type == DATATYPE_SHORT || son0Type == DATATYPE_LONG ||
+                son0Type == DATATYPE_BYTE)){
+                //Lado esquerdo é inteiro e lado direito é double
+                return DATATYPE_DOUBLE;
+            }
+            else if(son0Type == DATATYPE_LONG && son1Type == DATATYPE_SHORT){
+                //Lado esquerdo é long e lado direito é short
+                return DATATYPE_LONG;
+            }
+            else if(son1Type == DATATYPE_LONG && son0Type == DATATYPE_SHORT){
+                //Lado direito é long e lado esquerdo é short
+                return DATATYPE_LONG;
+            }
+            else if(son0Type == DATATYPE_SHORT && son1Type == DATATYPE_BYTE){
+                //Lado esquerdo é short e lado direito é byte
+                return DATATYPE_SHORT;
+            }
+            else if(son1Type == DATATYPE_SHORT && son0Type == DATATYPE_BYTE){
+                //Lado esquerdo é byte e lado direito é short
+                return DATATYPE_SHORT;
+            }
+            else if(son0Type == DATATYPE_LONG && son1Type == DATATYPE_BYTE){
+                //Lado esquerdo é long e lado direito é byte
+                return DATATYPE_LONG;
+            }
+            else if(son1Type == DATATYPE_LONG && son0Type == DATATYPE_BYTE){
+                //Lado esquerdo é byte e lado direito é long
+                return DATATYPE_LONG;
+            }
+            else{
+                fprintf(stderr, "ERRO, expressão relaciona tipos incompatíveis\n");
+                _errorStatus = 1;
+                return -1;
+            }
+        }
+        else if(node->type == AST_LESS || node->type == AST_GREATER || node->type == AST_LE || node->type == AST_GE ||
+            node->type == AST_EQ || node->type == AST_NE || node->type == AST_AND || node->type == AST_OR ||
+            node->type == AST_NOT){
+            //Expressões lógicas
+            return DATATYPE_BOOLEAN;
+        }
+        else if(node->type == AST_EXPRESSION){
+            return semanticSetOperatorsResultType(node->son[0]);
+        }
+        else{
+            fprintf(stderr, "ERRO INTERNO EM %s\n", __FUNCTION__);
         }
     }
 }

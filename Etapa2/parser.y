@@ -66,7 +66,7 @@ globalVariableDec: TK_IDENTIFIER ':' variableInfo ';'
 variableInfo: variableType '=' variableValue
 	| variableType '[' LIT_INTEGER ']' valueList
 	;
-	
+
 variableType: KW_BYTE
     | KW_SHORT
     | KW_LONG
@@ -211,6 +211,6 @@ tailArg: ',' expression tailArg
 
 void yyerror(char* arg){
 
-    fprintf(stderr, "Erro na linha %d\n", getLineNumber());
+    fprintf(stderr, "Erro sintático na linha %d\n", getLineNumber());
     exit(3);
 }

@@ -10,6 +10,7 @@
 #define DATATYPE_FLOAT      3
 #define DATATYPE_DOUBLE     4
 #define DATATYPE_BYTE       5
+#define DATATYPE_BOOLEAN    6
 
 #define NATURE_VARIABLE     1
 #define NATURE_ARRAY        2

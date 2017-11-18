@@ -24,18 +24,17 @@ void main(int argc, char **argv  ){
 	}
 	yyin = fopen(argv[1], "r");
 	if(!yyin){
-	    fprintf(stderr, "Erro abrindo arquivo\n");
+	    fprintf(stderr, "Erro abrindo arquivo de entrada\n");
 	    exit(1);
 	}
     initMe();
     yyparse();
-    fprintf(stderr, "Concluído com sucesso\n");
 
 	//hashPrint();
 	FILE* output = fopen(argv[2], "w+");
 
 	if(output == NULL){
-		fprintf(stderr, "%s", "Can't open output file. \n");
+		fprintf(stderr, "%s", "Erro abrindo arquivo de saída. \n");
         fclose(output);
 		exit(1);
 	}
@@ -44,8 +43,10 @@ void main(int argc, char **argv  ){
     if(semanticFullCheck(ast) != 0){
         //Erro semântico
         fclose(output);
+        fprintf(stderr, "Erro semântico\n");
         exit(4);
     }
 	fclose(output);
+    fprintf(stderr, "Concluído com sucesso\n");
 	exit(0);
 }
