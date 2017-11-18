@@ -14,6 +14,7 @@ int semanticFullCheck(AST_NODE* astree){
     semanticCheckFunctionCalls(astree);
     checkAstNodeDataType(astree);
 
+    return _errorStatus;
 }
 
 void semanticCheckDeclarations(AST_NODE* node){
@@ -177,14 +178,29 @@ void semanticCheckFunctionDeclarations(AST_NODE* node){
 
 void semanticCheckAttributions(AST_NODE* node){
 
-    int i, expDataType;
+    int i, expDataType, arrayIndexDataType;
 
     if(!node){
         return;
     }
 
     if(node->type == AST_ATTR){
-        //Atribuição de variáveis
+        //Atribuição a variáveis
+
+        //Determina a validade do lado esquerdo
+        if(node->symbol->symbol.nature != NATURE_VARIABLE){
+            if(node->symbol->symbol.nature == NATURE_FUNCTION){
+                fprintf(stderr, "ERRO, a função [%s] não pode ser usada como variável\n", node->symbol->symbol.text);
+            }
+            else if(node->symbol->symbol.nature == NATURE_ARRAY){
+                fprintf(stderr, "ERRO, o vetor [%s] não pode ser usado sem indexação\n", node->symbol->symbol.text);
+            }
+            else{
+                fprintf(stderr, "ERRO, a variável [%s] não foi declarada\n", node->symbol->symbol.text);
+            }
+            _errorStatus = 1;
+        }
+        //Determina a validade do lado direito
         expDataType = semanticSetOperatorsResultType(node->son[0]);
         if(expDataType == DATATYPE_BOOLEAN){
             fprintf(stderr, "ERRO, expressão atribuída à [%s] não pode ter tipo booleano\n", node->symbol->symbol.text);
@@ -198,6 +214,28 @@ void semanticCheckAttributions(AST_NODE* node){
             case DATATYPE_DOUBLE:fprintf(stderr, "DOUBLE\n"); break;
             case DATATYPE_BYTE:fprintf(stderr, "BYTE\n"); break;
             default: fprintf(stderr, "NÃO DEFINIDA\n");
+        }
+    }
+    else if(node->type == AST_ATTR_VEC){
+        //Atribuição a vetores
+
+        //Determina a validade do lado esquerdo
+        arrayIndexDataType = semanticSetOperatorsResultType(node->son[0]);
+        if(node->symbol->symbol.nature < 0){
+            fprintf(stderr, "ERRO, o vetor [%s] não foi declarado\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        else if(arrayIndexDataType != DATATYPE_BYTE && arrayIndexDataType != DATATYPE_SHORT && arrayIndexDataType != DATATYPE_LONG){
+            //Indice inválido
+            fprintf(stderr, "ERRO, acesso ao vetor [%s] possui índice não inteiro\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+
+        //Determina a validade do lado direito
+        expDataType = semanticSetOperatorsResultType(node->son[1]);
+        if(expDataType == DATATYPE_BOOLEAN){
+            fprintf(stderr, "ERRO, expressão atribuída à [%s] não pode ter tipo booleano\n", node->symbol->symbol.text);
+            _errorStatus = 1;
         }
     }
 
@@ -238,23 +276,37 @@ int semanticSetOperatorsResultType(AST_NODE* node){
                 return DATATYPE_FLOAT;
             }
             else{
-                fprintf(stderr, "ERRO, tipo não permitido encontrado em expressão [%s]\n", node->symbol->symbol.text);
+                fprintf(stderr, "ERRO, a variável [%s] não foi declarada\n", node->symbol->symbol.text);
                 _errorStatus = 1;
+                return DATATYPE_BYTE;
             }
         }
     }
     else if(node->symbol && node->type == AST_ARRAY){
         //O nodo é um acesso a vetor
-        arrayIndexDataType = semanticSetOperatorsResultType(node->son[0]);
-        if(arrayIndexDataType != DATATYPE_BYTE && arrayIndexDataType != DATATYPE_SHORT && arrayIndexDataType != DATATYPE_LONG){
-            //Indice inválido
-            fprintf(stderr, "ERRO, acesso ao vetor [%s] possui índice não inteiro\n", node->symbol->symbol.text);
-            _errorStatus = 1;
-            return node->symbol->symbol.dataType;
+        if(node->symbol->symbol.nature == NATURE_ARRAY){
+            //Variável declarada como array
+            arrayIndexDataType = semanticSetOperatorsResultType(node->son[0]);
+            if(arrayIndexDataType != DATATYPE_BYTE && arrayIndexDataType != DATATYPE_SHORT && arrayIndexDataType != DATATYPE_LONG){
+                //Indice inválido
+                fprintf(stderr, "ERRO, acesso ao vetor [%s] possui índice não inteiro\n", node->symbol->symbol.text);
+                _errorStatus = 1;
+            }
         }
+        else{
+            fprintf(stderr, "ERRO, o vetor [%s] não foi declarado\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        return node->symbol->symbol.dataType;
     }
     else if(node->symbol && node->type == AST_CALLFUNC){
-        //Verificar parâmetros???
+        if(node->symbol->symbol.nature == NATURE_FUNCTION){
+            //Verificar parâmetros???
+        }
+        else{
+            fprintf(stderr, "ERRO, função [%s] não foi declarada\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
         return node->symbol->symbol.dataType;
     }
     else{

@@ -108,7 +108,7 @@ variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_BYTE,$3,0,0
 	| KW_SHORT '[' LIT_INTEGER ']' intList 					{$$ = astCreate(AST_DEC_VEC_SHORT,$3,$5,0,0,0);}
 	| KW_LONG '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_LONG,$3,$5,0,0,0);}
 	| KW_FLOAT '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
-	| KW_DOUBLE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
+	| KW_DOUBLE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
 	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
 	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
 	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
