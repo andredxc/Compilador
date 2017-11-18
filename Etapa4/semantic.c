@@ -119,6 +119,18 @@ void semanticCheckDeclarations(AST_NODE* node){
                 _errorStatus = 1;
             }
         }
+        else if(node->type == AST_DEC_PARAM){
+            //Declaração de variável como parâmetro de função
+            node->symbol->symbol.nature = NATURE_VARIABLE;
+            switch(node->son[0]->type){
+                case AST_BYTE: node->symbol->symbol.dataType = DATATYPE_BYTE; break;
+                case AST_SHORT: node->symbol->symbol.dataType = DATATYPE_SHORT; break;
+                case AST_LONG: node->symbol->symbol.dataType = DATATYPE_LONG; break;
+                case AST_FLOAT: node->symbol->symbol.dataType = DATATYPE_FLOAT; break;
+                case AST_DOUBLE: node->symbol->symbol.dataType = DATATYPE_DOUBLE; break;
+                default: fprintf(stderr, "Erro interno estranho em %s\n", __FUNCTION__);
+            }
+        }
 
         for(i=0; i < MAX_SONS; i++){
             semanticCheckDeclarations(node->son[i]);
