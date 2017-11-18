@@ -6,6 +6,8 @@
 int semanticFullCheck(AST_NODE* astree);
 void semanticCheckDeclarations(AST_NODE* astree);
 void semanticCheckFunctionDeclarations(AST_NODE* node);
+void semanticSetOperatorsResultType(AST_NODE* node);
+void semanticCheckFunctionCalls(AST_NODE* node);
 void verifyParams(AST_NODE* node);
 int countFuncNumParams(AST_NODE *node);
 void checkAstNodeDataType(AST_NODE* node);

@@ -40,7 +40,8 @@ HASH_NODE* hashInsert(int type, char* text){
 
     //Initializes new node
     newNode = (HASH_NODE*) calloc(1, sizeof(HASH_NODE));
-    newNode->symbol.isDeclared = 0;
+    newNode->symbol.nature = -1;
+    newNode->symbol.dataType = -1;
     newNode->symbol.type = type;
     newNode->symbol.text = (char*) calloc(strlen(text)+1, sizeof(char));
     strncpy(newNode->symbol.text, text, strlen(text));

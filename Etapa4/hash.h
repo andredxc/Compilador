@@ -23,7 +23,6 @@
 #define HASH_SIZE 997
 
 typedef struct symbol{
-    int isDeclared;
     int type;
     int nature;     //variavel, função, array
     int dataType;   //short, long, float, double, byte
