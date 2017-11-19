@@ -497,9 +497,9 @@ void verifyParams(AST_NODE* raiz, AST_NODE* node){
 	numParam = countFuncNumParams(node->son[0]);
 	if(numParam != correct_n_par){
 		fprintf(stderr, "Número inválido de parâmetros na chamada da função [%s]\n", node->symbol->symbol.text);
+		_errorStatus = 1;
 	}else{
 		if(node->son[0]){
-			// fprintf(stderr, "Verificando parametros da função [%s]\n", node->symbol->symbol.text);
 			verifyTypeFuncCallParams(raiz, node);
 		}
 	}
@@ -521,15 +521,12 @@ void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function){
 
 		if (semanticSetOperatorsResultType(function->son[0]) == DATATYPE_BOOLEAN){
 			fprintf(stderr, "ERRO: expressão booleana em parâmetro de função.\n");
+			_errorStatus = 1;
 		}
 
 		function = function->son[1];
 		raiz = raiz->son[1];
 	}
-
-
-
-
 }
 
 void semanticCheckFunctionReturnTypes(AST_NODE* node){
