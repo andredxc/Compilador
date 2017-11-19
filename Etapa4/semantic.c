@@ -222,6 +222,7 @@ void semanticCheckAttributions(AST_NODE* node){
             fprintf(stderr, "ERRO, expressão atribuída à [%s] não pode ter tipo booleano\n", node->symbol->symbol.text);
             _errorStatus = 1;
         }
+        /*
         fprintf(stderr, "EXPRESSÃO ATRIBUIDA A [%s] É: ", node->symbol->symbol.text);
         switch (expDataType){
             case DATATYPE_SHORT:fprintf(stderr, "SHORT\n"); break;
@@ -231,6 +232,7 @@ void semanticCheckAttributions(AST_NODE* node){
             case DATATYPE_BYTE:fprintf(stderr, "BYTE\n"); break;
             default: fprintf(stderr, "NÃO DEFINIDA\n");
         }
+        */
     }
     else if(node->type == AST_ATTR_VEC){
         //Atribuição a vetores

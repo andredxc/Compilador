@@ -82,7 +82,7 @@
 
 %%
 
-program: decList											{$$ = $1; ast = $$; astPrint($$, 0); }
+program: decList											{$$ = $1; ast = $$; /*astPrint($$, 0);*/}
 	;
 
 decList: dec decList										{$$ = astCreate(AST_CJTODEC_ELEM,0,$1,$2,0,0);}
@@ -90,7 +90,7 @@ decList: dec decList										{$$ = astCreate(AST_CJTODEC_ELEM,0,$1,$2,0,0);}
 	;
 
 dec: globalVariableDec										{$$ = $1;}
-    | functionDec											{$$ = $1; astPrint($$, 0);}
+    | functionDec											{$$ = $1;}
 	;
 
 
