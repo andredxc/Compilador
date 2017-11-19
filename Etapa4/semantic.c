@@ -10,12 +10,13 @@ int semanticFullCheck(AST_NODE* astree){
 	raiz = astree;
     _errorStatus = 0;
 
-    //fprintf(stderr, "%s \n", astree->symbol->symbol.text);	
+    //fprintf(stderr, "%s \n", astree->symbol->symbol.text);
 
     semanticCheckDeclarations(astree);
     semanticCheckFunctionDeclarations(astree);
     semanticCheckAttributions(astree);
     semanticCheckFunctionCalls(raiz, astree);
+    semanticCheckFunctionReturnTypes(astree);
 
     return _errorStatus;
 }
@@ -430,11 +431,10 @@ int semanticSetOperatorsResultType(AST_NODE* node){
             return semanticSetOperatorsResultType(node->son[0]);
         }
         else{
-            fprintf(stderr, "ERRO INTERNO EM %s\n", __FUNCTION__);
+            fprintf(stderr, "ERRO INTERNO EM %s, entrou com node->type: %d\n", __FUNCTION__, node->type);
         }
     }
 }
-
 
 void semanticCheckFunctionCalls(AST_NODE* raiz, AST_NODE* node){
 
@@ -505,9 +505,9 @@ void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function){
 	raiz = raiz->son[0]->son[1];
 	while(function){
     	//fprintf(stderr, "raiz %d %s %d\n", raiz->son[0]->type, raiz->son[0]->symbol->symbol.text, raiz->son[0]->symbol->symbol.dataType);
-		//fprintf(stderr, "function %d %s %d %d\n", function->son[0]->type, function->son[0]->symbol->symbol.text, function->son[0]->symbol->symbol.type, function->son[0]->symbol->symbol.dataType); 
-		//fprintf(stderr, "function %d\n", function->son[0]->type); 
-		
+		//fprintf(stderr, "function %d %s %d %d\n", function->son[0]->type, function->son[0]->symbol->symbol.text, function->son[0]->symbol->symbol.type, function->son[0]->symbol->symbol.dataType);
+		//fprintf(stderr, "function %d\n", function->son[0]->type);
+
 		/* Verificar se é uma expressão */
 		/*if(function->son[0]->type == ){
 
@@ -519,5 +519,38 @@ void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function){
 
 
 
-	
+
+}
+
+void semanticCheckFunctionReturnTypes(AST_NODE* node){
+
+    int i;
+    AST_NODE *nodeBuffer;
+
+    if(!node){
+        return;
+    }
+
+    if(node->type == AST_DEC_FUNC){
+        //Verifica se o dataType do valor retornado corresponde ao da função
+        //nodeBuffer recebe o commandBlock da função
+        nodeBuffer = node->son[2];
+        while(nodeBuffer){
+            //Dentro do comandBlock
+            if(nodeBuffer->son[0] && nodeBuffer->son[0]->type == AST_RETURN){
+                if(semanticSetOperatorsResultType(nodeBuffer->son[0]->son[0]) == DATATYPE_BOOLEAN){
+                    fprintf(stderr, "ERRO, return não compatível com o tipo da função [%s]\n", node->symbol->symbol.text);
+                    _errorStatus = 1;
+                }
+                return;
+            }
+            else{
+                nodeBuffer = nodeBuffer->son[1];
+            }
+        }
+    }
+
+    for(i = 0; i< MAX_SONS; i++){
+        semanticCheckFunctionReturnTypes(node->son[i]);
+    }
 }

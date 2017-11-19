@@ -394,3 +394,73 @@ void astreeProgram(AST_NODE* node, FILE* output){
 
 	}
 }
+
+void astPrintNode(AST_NODE* node){
+
+    fprintf(stderr, "node->type: %s\n", astNodeType(node->type));
+    if(node->son[0])
+        fprintf(stderr, "node->son[0]: %s\n", astNodeType(node->son[0]->type));
+    if(node->son[1])
+        fprintf(stderr, "node->son[1]: %s\n", astNodeType(node->son[1]->type));
+    if(node->son[2])
+        fprintf(stderr, "node->son[2]: %s\n", astNodeType(node->son[2]->type));
+}
+
+const char* astNodeType(int type){
+
+    switch (type) {
+        case AST_SYMBOL: return "AST_SYMBOL";
+        case AST_ADD: return "AST_ADD";
+        case AST_SUB: return "AST_SUB";
+        case AST_MUL: return "AST_MUL";
+        case AST_DIV: return "AST_DIV";
+        case AST_LESS: return "AST_LESS";
+        case AST_GREATER: return "AST_GREATER";
+        case AST_LE: return "AST_LE";
+        case AST_GE: return "AST_GE";
+        case AST_EQ: return "AST_EQ";
+        case AST_NE: return "AST_NE";
+        case AST_AND: return "AST_AND";
+        case AST_OR: return "AST_OR";
+        case AST_ARRAY: return "AST_ARRAY";
+        case AST_NOT: return "AST_NOT";
+        case AST_READ: return "AST_READ";
+        case AST_BYTE: return "AST_BYTE";
+        case AST_SHORT: return "AST_SHORT";
+        case AST_LONG: return "AST_LONG";
+        case AST_FLOAT: return "AST_FLOAT";
+        case AST_DOUBLE: return "AST_DOUBLE";
+		case AST_CJTODEC_ELEM: return "AST_CJTODEC_ELEM";
+		case AST_DEC_VAR_GLOB: return "AST_DEC_VAR_GLOB";
+		case AST_DEC_VEC_SEQ: return "AST_DEC_VEC_SEQ";
+		case AST_DEC_VEC: return "AST_DEC_VEC";
+		case AST_DEC_FUNC: return "AST_DEC_FUNC";
+		case AST_DEC_PARAM: return "AST_DEC_PARAM";
+		case AST_DEC_PARAM_VEC: return "AST_DEC_PARAM_VEC";
+		case AST_COMMAND_BLOCK: return "AST_COMMAND_BLOCK";
+		case AST_VEC_COMMAND_BLOCK: return "AST_VEC_COMMAND_BLOCK";
+        case AST_DEC_VAR_BYTE: return "AST_DEC_VAR_BYTE";
+        case AST_DEC_VAR_SHORT: return "AST_DEC_VAR_SHORT";
+        case AST_DEC_VAR_LONG: return "AST_DEC_VAR_LONG";
+        case AST_DEC_VAR_FLOAT: return "AST_DEC_VAR_FLOAT";
+        case AST_DEC_VAR_DOUBLE: return "AST_DEC_VAR_DOUBLE";
+        case AST_DEC_VEC_SHORT: return "AST_DEC_VEC_SHORT";
+        case AST_DEC_VEC_LONG: return "AST_DEC_VEC_LONG";
+        case AST_DEC_VEC_FLOAT: return "AST_DEC_VEC_FLOAT";
+        case AST_DEC_VEC_DOUBLE: return "AST_DEC_VEC_DOUBLE";
+        case AST_DEC_VEC_BYTE: return "AST_DEC_VEC_BYTE";
+        case AST_CALLFUNC: return "AST_CALLFUNC";
+        case AST_ATTR: return "AST_ATTR";
+        case AST_ATTR_VEC: return "AST_ATTR_VEC";
+        case AST_PRINT: return "AST_PRINT";
+        case AST_PRINT_ARG: return "AST_PRINT_ARG";
+		case AST_PRINT_ARG2: return "AST_PRINT_ARG2";
+        case AST_IF: return "AST_IF";
+        case AST_IF_ELSE: return "AST_IF_ELSE";
+        case AST_WHILE: return "AST_WHILE";
+        case AST_FUNC_ARG_LIST: return "AST_FUNC_ARG_LIST";
+        case AST_RETURN: return "AST_RETURN";
+        case AST_EXPRESSION: return "AST_EXPRESSION";
+        default: return "UNKNOWN";
+    }
+}

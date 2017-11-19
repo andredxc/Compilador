@@ -80,5 +80,7 @@ AST_NODE* ast;
 AST_NODE* astCreate(int type, HASH_NODE* node, AST_NODE* son0, AST_NODE* son1, AST_NODE* son2, AST_NODE* son3);
 void astPrint(AST_NODE* node, int level);
 void astreeProgram(AST_NODE* node, FILE* output);
+void astPrintNode(AST_NODE* node);
+const char* astNodeType(int type);
 
 #endif
