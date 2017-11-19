@@ -17,6 +17,7 @@ int semanticFullCheck(AST_NODE* astree){
     semanticCheckAttributions(astree);
     semanticCheckFunctionCalls(raiz, astree);
     semanticCheckFunctionReturnTypes(astree);
+    semanticCheckReads(astree);
 
     return _errorStatus;
 }
@@ -559,5 +560,33 @@ void semanticCheckFunctionReturnTypes(AST_NODE* node){
 
     for(i = 0; i< MAX_SONS; i++){
         semanticCheckFunctionReturnTypes(node->son[i]);
+    }
+}
+
+void semanticCheckReads(AST_NODE* node){
+
+    int i;
+
+    if(!node){
+        return;
+    }
+
+    if(node->type == AST_READ){
+        if(node->symbol->symbol.nature == NATURE_ARRAY){
+            fprintf(stderr, "ERRO, o vetor [%s] não pode ser usado na instrução read\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        else if(node->symbol->symbol.nature == NATURE_FUNCTION){
+            fprintf(stderr, "ERRO, a função [%s] não pode ser usada na instrução read\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        else if(node->symbol->symbol.nature != NATURE_VARIABLE){
+            fprintf(stderr, "ERRO, [%s] não pode ser usada na instrução read\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+    }
+
+    for(i = 0; i < MAX_SONS; i++){
+        semanticCheckReads(node->son[i]);
     }
 }

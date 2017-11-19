@@ -13,5 +13,6 @@ void verifyParams(AST_NODE* raiz, AST_NODE* node);
 int countFuncNumParams(AST_NODE *node);
 void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function);
 void semanticCheckFunctionReturnTypes(AST_NODE* node);
+void semanticCheckReads(AST_NODE* node);
 
 #endif
