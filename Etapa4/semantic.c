@@ -243,6 +243,14 @@ void semanticCheckAttributions(AST_NODE* node){
             fprintf(stderr, "ERRO, o vetor [%s] não foi declarado\n", node->symbol->symbol.text);
             _errorStatus = 1;
         }
+        else if(node->symbol->symbol.nature == NATURE_VARIABLE){
+            fprintf(stderr, "ERRO, [%s] é uma variável, não pode ser usada como um vetor\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        else if(node->symbol->symbol.nature == NATURE_FUNCTION){
+            fprintf(stderr, "ERRO, [%s] é uma função, não pode ser usada como um vetor\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
         else if(arrayIndexDataType != DATATYPE_BYTE && arrayIndexDataType != DATATYPE_SHORT && arrayIndexDataType != DATATYPE_LONG){
             //Indice inválido
             fprintf(stderr, "ERRO, acesso ao vetor [%s] possui índice não inteiro\n", node->symbol->symbol.text);
