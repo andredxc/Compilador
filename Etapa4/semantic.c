@@ -293,6 +293,10 @@ int semanticSetOperatorsResultType(AST_NODE* node){
             else if(node->symbol->symbol.type == LIT_REAL){
                 return DATATYPE_FLOAT;
             }
+            else if(node->symbol->symbol.type == LIT_CHAR){
+                fprintf(stderr, "ERRO, uso indevido do caractere [%s]\n", node->symbol->symbol.text);
+                _errorStatus = 1;
+            }
             else{
                 fprintf(stderr, "ERRO, a variável [%s] não foi declarada\n", node->symbol->symbol.text);
                 _errorStatus = 1;
@@ -487,7 +491,7 @@ void verifyParams(AST_NODE* raiz, AST_NODE* node){
 		fprintf(stderr, "Número inválido de parâmetros na chamada da função [%s]\n", node->symbol->symbol.text);
 	}else{
 		if(node->son[0]){
-			fprintf(stderr, "Verificando parametros da função [%s]\n", node->symbol->symbol.text);
+			// fprintf(stderr, "Verificando parametros da função [%s]\n", node->symbol->symbol.text);
 			verifyTypeFuncCallParams(raiz, node);
 		}
 	}
