@@ -3,9 +3,11 @@
 #include "y.tab.h"
 
 int _errorStatus;
+AST_NODE* raiz;
 
 int semanticFullCheck(AST_NODE* astree){
 
+	raiz = astree;
     _errorStatus = 0;
 
     //fprintf(stderr, "%s \n", astree->symbol->symbol.text);	
@@ -13,7 +15,7 @@ int semanticFullCheck(AST_NODE* astree){
     semanticCheckDeclarations(astree);
     semanticCheckFunctionDeclarations(astree);
     semanticCheckAttributions(astree);
-    semanticCheckFunctionCalls(astree);
+    semanticCheckFunctionCalls(raiz, astree);
 
     return _errorStatus;
 }
@@ -433,7 +435,8 @@ int semanticSetOperatorsResultType(AST_NODE* node){
     }
 }
 
-void semanticCheckFunctionCalls(AST_NODE* node){
+
+void semanticCheckFunctionCalls(AST_NODE* raiz, AST_NODE* node){
 
     int i;
 
@@ -453,12 +456,12 @@ void semanticCheckFunctionCalls(AST_NODE* node){
             }
             _errorStatus = 1;
         }else{
-			verifyParams(node);
+			verifyParams(raiz, node);
 		}
     }
 
     for(i = 0; i < MAX_SONS; i++){
-        semanticCheckFunctionCalls(node->son[i]);
+        semanticCheckFunctionCalls(raiz, node->son[i]);
     }
 }
 
@@ -472,32 +475,49 @@ int countFuncNumParams(AST_NODE *node){
 }
 
 /* Verifica se o parâmetro tem o mesmo número de itens da declaração e se os tipos são compatíveis. */
-void verifyParams(AST_NODE* node){
+void verifyParams(AST_NODE* raiz, AST_NODE* node){
 
 	int numParam = 0;
 	// caso a função tenha algum parâmetro, contar o numero de parametros e verificar os tipos
-	int correct_n_par = node->symbol->symbol.numParams;
+	int correct_n_par = node-> symbol->symbol.numParams;
 	numParam = countFuncNumParams(node->son[0]);
 	if(numParam != correct_n_par){
 		fprintf(stderr, "Número inválido de parâmetros na chamada da função [%s]\n", node->symbol->symbol.text);
 	}else{
 		if(node->son[0]){
 			fprintf(stderr, "Verificando parametros da função [%s]\n", node->symbol->symbol.text);
-			verifyTypeFuncCallParams(node->son[0]);
+			verifyTypeFuncCallParams(raiz, node);
 		}
 	}
 }
 
 /* Verifica se os tipos dos parametros passados em uma FUNCAO são compativeis com a declaração. */
-void verifyTypeFuncCallParams(AST_NODE* node){
+void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function){
 
-	if(!node){
-		return;
+	AST_NODE* aux = raiz;
+	char* nameFunction = function->symbol->symbol.text;
+	// Encontra a função declara na árvore
+	while(raiz->son[0]->symbol->symbol.text != function->symbol->symbol.text){
+		raiz = raiz->son[1];
 	}
 
-	fprintf(stderr, "entrada [%s] tipoEntrada[%d]\n", node->son[0]->symbol->symbol.text, node->son[0]->symbol->symbol.type);
+	function = function->son[0];
+	raiz = raiz->son[0]->son[1];
+	while(function){
+    	//fprintf(stderr, "raiz %d %s %d\n", raiz->son[0]->type, raiz->son[0]->symbol->symbol.text, raiz->son[0]->symbol->symbol.dataType);
+		//fprintf(stderr, "function %d %s %d %d\n", function->son[0]->type, function->son[0]->symbol->symbol.text, function->son[0]->symbol->symbol.type, function->son[0]->symbol->symbol.dataType); 
+		//fprintf(stderr, "function %d\n", function->son[0]->type); 
+		
+		/* Verificar se é uma expressão */
+		/*if(function->son[0]->type == ){
 
-	verifyTypeFuncCallParams(node->son[1]);
+		} */
+
+		function = function->son[1];
+		raiz = raiz->son[1];
+	}
+
+
 
 	
 }

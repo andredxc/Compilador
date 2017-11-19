@@ -1,6 +1,6 @@
 // UFRGS - Compiladores - Marcelo Johann - 2017/2
 
-a: short = 0;
+a: byte = 0;
 i: long = 0;
 v: long[10] 0 0 0 0 0 0 0 0 0 0;
 vector: long[10];
@@ -23,7 +23,7 @@ d: byte = 65;
   read > i;
   while (i<10)
     {
-    a = incn(a,1,2,2,2, 3);
+    a = incn(a,1+1,2,2,2, 3);
     a = function();
     i = 2*3+1*(i+3+2) + 1
     };
@@ -44,7 +44,7 @@ d: byte = 65;
 (short) voidfunc() {}
 
 
-(long) incn (x: long, n: long, y: long, x: long, n: long, y: long) {}
+(long) incn (x: byte, n: long, y: long, x: long, n: long, y: long) {}
 (long) incn2 (x: long, n: long, y: long, x: long, n: long) {}
 (long) incn3 (x: long, n: long, y: long, y: long) {}
 (long) incn4 ( x: long, n: long, y: long) {}
