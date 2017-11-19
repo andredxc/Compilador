@@ -495,23 +495,19 @@ void verifyParams(AST_NODE* raiz, AST_NODE* node){
 void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function){
 
 	AST_NODE* aux = raiz;
-	char* nameFunction = function->symbol->symbol.text;
-	// Encontra a função declara na árvore
-	while(raiz->son[0]->symbol->symbol.text != function->symbol->symbol.text){
+
+	// Encontra a função declarada na árvore
+	/*while(raiz->son[0]->symbol->symbol.text != function->symbol->symbol.text){
 		raiz = raiz->son[1];
 	}
+	raiz = raiz->son[0]->son[1];*/
 
 	function = function->son[0];
-	raiz = raiz->son[0]->son[1];
 	while(function){
-    	//fprintf(stderr, "raiz %d %s %d\n", raiz->son[0]->type, raiz->son[0]->symbol->symbol.text, raiz->son[0]->symbol->symbol.dataType);
-		//fprintf(stderr, "function %d %s %d %d\n", function->son[0]->type, function->son[0]->symbol->symbol.text, function->son[0]->symbol->symbol.type, function->son[0]->symbol->symbol.dataType); 
-		//fprintf(stderr, "function %d\n", function->son[0]->type); 
-		
-		/* Verificar se é uma expressão */
-		/*if(function->son[0]->type == ){
-
-		} */
+     
+		if (semanticSetOperatorsResultType(function->son[0]) == DATATYPE_BOOLEAN){
+			fprintf(stderr, "ERRO: expressão booleana em parâmetro de função.\n"); 
+		}	
 
 		function = function->son[1];
 		raiz = raiz->son[1];

@@ -14,7 +14,7 @@ print "Digite um numero: \n", variavel, "\n" ;
 if ( !(( a<10) )) then print "Oi\n" ;
 read > i ;
 while ( i<10){
-a = incn (a, 1+1, 2, 2, 2, 3);
+a = incn (a, 1+3, 2, 2, 2, 3);
 a = function ();
 i = 2*3+1*( i+3+2) +1};
 print "Incrementado algumas vezes fica ", a, "\n" ;
