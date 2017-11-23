@@ -510,24 +510,55 @@ void verifyParams(AST_NODE* raiz, AST_NODE* node){
 void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function){
 
 	AST_NODE* aux = raiz;
+    int tipoDeclaradoFunc;
+    int tipoPassadoParam;
 
-	// Encontra a função declarada na árvore
-	/*while(raiz->son[0]->symbol->symbol.text != function->symbol->symbol.text){
+	//Encontra a função declarada na árvore
+	while(raiz->son[0]->symbol->symbol.text != function->symbol->symbol.text){
 		raiz = raiz->son[1];
 	}
-	raiz = raiz->son[0]->son[1];*/
+	raiz = raiz->son[0]->son[1];
 
 	function = function->son[0];
 	while(function){
 
-		if (semanticSetOperatorsResultType(function->son[0]) == DATATYPE_BOOLEAN){
-			fprintf(stderr, "ERRO: expressão booleana em parâmetro de função.\n");
-			_errorStatus = 1;
-		}
-
+        tipoDeclaradoFunc = raiz->son[0]->son[0]->type;
+        tipoPassadoParam = semanticSetOperatorsResultType(function->son[0]);
+        /*Faz casamento de tipos dos parâmetros passados para a função com o que foi declarado */
+        verificaCompatibilidade(tipoDeclaradoFunc, tipoPassadoParam);
+        //fprintf(stderr, "raiz->text: <%s> raiz->dataType: <%d> \n", raiz->son[0]->symbol->symbol.text, raiz->son[0]->son[0]->type);
 		function = function->son[1];
 		raiz = raiz->son[1];
 	}
+}
+
+void verificaCompatibilidade(int tipoDeclaradoFunc, int tipoPassadoParam){
+
+    if (tipoPassadoParam == DATATYPE_BOOLEAN){
+		fprintf(stderr, "ERRO: expressão booleana em parâmetro de função.\n");
+		_errorStatus = 1;
+	}
+
+    int paramIsReal = 0; //parametro passado default: SIM é real
+    int declFuncIsReal = 0; //parametro passado default: SIM é real
+    /*inteiros compativeis: DATATYPE_SHORT=1 DATATYPE_LONG=2 DATATYPE_BYTE=5
+      reais compativeis: DATATYPE_FLOAT=3 DATATYPE_DOUBLE=4  */
+
+    // seta que o tipo passado por parâmetro é inteiro
+    if(tipoPassadoParam == DATATYPE_SHORT || tipoPassadoParam == DATATYPE_LONG || tipoPassadoParam == DATATYPE_BYTE){
+       paramIsReal = 1; //tipo passado NÃO é real, logo, é inteiro
+    }
+
+    if(tipoDeclaradoFunc == AST_SHORT || tipoDeclaradoFunc == AST_LONG || tipoDeclaradoFunc == AST_BYTE){
+        declFuncIsReal = 1; //tipo declarado NÃO é real, logo, é inteiro
+    }
+
+
+    if(paramIsReal != declFuncIsReal){
+		fprintf(stderr, "ERRO: tipo de parâmetro de função não compatível com o passado.\n");
+        _errorStatus = 1;
+    }
+    
 }
 
 void semanticCheckFunctionReturnTypes(AST_NODE* node){

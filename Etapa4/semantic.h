@@ -14,5 +14,6 @@ int countFuncNumParams(AST_NODE *node);
 void verifyTypeFuncCallParams(AST_NODE* raiz, AST_NODE* function);
 void semanticCheckFunctionReturnTypes(AST_NODE* node);
 void semanticCheckReads(AST_NODE* node);
+void verificaCompatibilidade(int tipoDeclaradoFunc, int tipoPassadoParam);
 
 #endif
