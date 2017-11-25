@@ -48,9 +48,14 @@
 %type<ast> dec
 %type<ast> globalVariableDec
 %type<ast> variableInfo
+%type<ast> literalList
+
+/*
 %type<ast> intList
 %type<ast> realList
 %type<ast> charList
+*/
+
 %type<ast> functionDec
 %type<ast> parameterList
 %type<ast> moreParameters
@@ -105,25 +110,16 @@ variableInfo: KW_BYTE '=' LIT_CHAR							{$$ = astCreate(AST_DEC_VAR_BYTE,$3,0,0
 	| KW_FLOAT '=' LIT_INTEGER     							{$$ = astCreate(AST_DEC_VAR_FLOAT,$3,0,0,0,0);}
 	| KW_DOUBLE '=' LIT_REAL								{$$ = astCreate(AST_DEC_VAR_DOUBLE,$3,0,0,0,0);}
     | KW_DOUBLE '=' LIT_INTEGER								{$$ = astCreate(AST_DEC_VAR_DOUBLE,$3,0,0,0,0);}
-	| KW_SHORT '[' LIT_INTEGER ']' intList 					{$$ = astCreate(AST_DEC_VEC_SHORT,$3,$5,0,0,0);}
-	| KW_LONG '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_LONG,$3,$5,0,0,0);}
-	| KW_FLOAT '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
-	| KW_DOUBLE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
-	| KW_FLOAT '[' LIT_INTEGER ']' realList					{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
-	| KW_DOUBLE '[' LIT_INTEGER ']' realList				{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
-	| KW_BYTE '[' LIT_INTEGER ']' intList					{$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
-    | KW_BYTE '[' LIT_INTEGER ']' charList                  {$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
+    | KW_BYTE '[' LIT_INTEGER ']' literalList               {$$ = astCreate(AST_DEC_VEC_BYTE,$3,$5,0,0,0);}
+    | KW_SHORT '[' LIT_INTEGER ']' literalList 				{$$ = astCreate(AST_DEC_VEC_SHORT,$3,$5,0,0,0);}
+    | KW_LONG '[' LIT_INTEGER ']' literalList				{$$ = astCreate(AST_DEC_VEC_LONG,$3,$5,0,0,0);}
+    | KW_FLOAT '[' LIT_INTEGER ']' literalList				{$$ = astCreate(AST_DEC_VEC_FLOAT,$3,$5,0,0,0);}
+    | KW_DOUBLE '[' LIT_INTEGER ']' literalList				{$$ = astCreate(AST_DEC_VEC_DOUBLE,$3,$5,0,0,0);}
 	;
 
-intList: LIT_INTEGER intList								{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
-	|														{$$ = 0;}
-	;
-
-realList: LIT_REAL realList									{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
-	|														{$$ = 0;}
-	;
-
-charList: LIT_CHAR charList                                 {$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
+literalList: LIT_INTEGER literalList						{$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
+    | LIT_REAL literalList                                  {$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
+    | LIT_CHAR literalList                                  {$$ = astCreate(AST_DEC_VEC,$1,$2,0,0,0);}
     |                                                       {$$ = 0;}
     ;
 
