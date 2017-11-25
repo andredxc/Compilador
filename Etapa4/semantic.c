@@ -219,6 +219,18 @@ void semanticCheckAttributions(AST_NODE* node){
             fprintf(stderr, "ERRO, expressão atribuída à [%s] não pode ter tipo booleano\n", node->symbol->symbol.text);
             _errorStatus = 1;
         }
+        else if((node->symbol->symbol.dataType == DATATYPE_BYTE || node->symbol->symbol.dataType == DATATYPE_SHORT || node->symbol->symbol.dataType == DATATYPE_LONG) &&
+            (expDataType == DATATYPE_FLOAT || expDataType == DATATYPE_DOUBLE)){
+            //Lado esquerdo é inteiro e o direito é real
+            fprintf(stderr, "ERRO, atribuição à variável [%s] é inválida (inteiro = real)\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
+        else if((node->symbol->symbol.dataType == DATATYPE_FLOAT || node->symbol->symbol.dataType == DATATYPE_DOUBLE) &&
+            (expDataType == DATATYPE_BYTE || expDataType == DATATYPE_SHORT || expDataType == DATATYPE_LONG)){
+            //Lado esquerdo é real e o direito é inteiro
+            fprintf(stderr, "ERRO, atribuição à variável [%s] é inválida (real = inteiro)\n", node->symbol->symbol.text);
+            _errorStatus = 1;
+        }
 
         fprintf(stderr, "EXPRESSÃO ATRIBUIDA A [%s] É: ", node->symbol->symbol.text);
         switch (expDataType){
