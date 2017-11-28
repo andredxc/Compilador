@@ -8,6 +8,7 @@
 #include "hash.h"
 #include "y.tab.h"
 #include "semantic.h"
+#include "tac.h"
 
 extern FILE* yyin;
 extern int yylex();
@@ -18,8 +19,8 @@ void main(int argc, char **argv  ){
 
 	int token;
 
-	if(argc < 3){
-	    fprintf(stderr, "Uso: ./executavel <arquivo> <saida>\n");
+	if(argc < 2){
+	    fprintf(stderr, "Uso: ./executavel <arquivo>\n");
 	    exit(1);
 	}
 	yyin = fopen(argv[1], "r");
@@ -31,22 +32,16 @@ void main(int argc, char **argv  ){
     yyparse();
 
 	//hashPrint();
-	FILE* output = fopen(argv[2], "w+");
+    astPrint(ast, 0);
 
-	if(output == NULL){
-		fprintf(stderr, "%s", "Erro abrindo arquivo de saída. \n");
-        fclose(output);
-		exit(1);
-	}
-
-	astreeProgram(ast,output);
     if(semanticFullCheck(ast) != 0){
         //Erro semântico
-        fclose(output);
         fprintf(stderr, "Erro semântico\n");
         exit(4);
     }
-	fclose(output);
+
+    tacGenerate(ast);
+
     fprintf(stderr, "Concluído com sucesso\n");
 	exit(0);
 }

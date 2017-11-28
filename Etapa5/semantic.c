@@ -115,7 +115,7 @@ void semanticCheckDeclarations(AST_NODE* node){
                 }
             }
             else{
-                fprintf(stderr, "ERRO interno, a variável [%s] não é variável nem vetor\n", node->symbol->symbol.text);
+                fprintf(stderr, "ERRO, a declaração de [%s] é inválida\n", node->symbol->symbol.text);
                 _errorStatus = 1;
             }
         }

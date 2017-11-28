@@ -36,11 +36,14 @@ typedef struct hash_struct{
 	struct hash_struct *next;
 }HASH_NODE;
 
+//Hash
 HASH_NODE* _hashTable[HASH_SIZE];
 void hashInit();
 int hashAddress(char* text);
 HASH_NODE* hashInsert(int type, char* text);
 void hashPrint();
 HASH_NODE* hashFind(char* text);
+
+
 
 #endif

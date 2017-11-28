@@ -50,12 +50,6 @@
 %type<ast> variableInfo
 %type<ast> literalList
 
-/*
-%type<ast> intList
-%type<ast> realList
-%type<ast> charList
-*/
-
 %type<ast> functionDec
 %type<ast> parameterList
 %type<ast> moreParameters
@@ -79,8 +73,8 @@
 %token TOKEN_ERROR
 
 
-%left '*' '/'
 %left '-' '+'
+%left '*' '/'
 %left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
 %left OPERATOR_OR OPERATOR_AND
 %right '!'

@@ -20,7 +20,7 @@ semantic.o:
 	gcc -c semantic.c
 
 tac.o:
-	gcc -c tac.c
+	gcc -c tac.c -g
 
 y.tab.c: parser.y
 	yacc -d -v parser.y
