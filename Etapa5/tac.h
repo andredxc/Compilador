@@ -6,6 +6,8 @@
 #include "hash.h"
 #include "astree.h"
 
+#define TAC_SYMBOL 1
+
 typedef struct tac{
 
     int type;
@@ -17,10 +19,11 @@ typedef struct tac{
     struct tac* next;
 }TAC;
 
-TAC* tacCreate(int type, TAC* op1, TAC* op2, TAC* op3, TAC* res);
 TAC* tacGenerate(AST_NODE* node);
+TAC* tacCreate(int type, HASH_NODE* op1, HASH_NODE* op2, HASH_NODE* op3, HASH_NODE* res);
 TAC* tacJoin(TAC* list1, TAC* list2);
 void tacPrintBack(TAC* last);
 void tacPrintSingle(TAC* tac);
+const char* tacGetTypeName(int type);
 
 #endif
