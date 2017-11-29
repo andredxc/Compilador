@@ -25,6 +25,7 @@
 #define TAC_IFZ         17
 #define TAC_LABEL       18
 #define TAC_JMP         19
+#define TAC_RETURN      20
 
 typedef struct tac{
 
@@ -50,8 +51,10 @@ HASH_NODE* makeLabel();
 TAC* tacOp(AST_NODE* node, TAC* code0, TAC* code1);
 TAC* tacVectorAccess(AST_NODE* node, TAC* code0);
 TAC* tacVarAttribution(AST_NODE* node, TAC* code0);
+TAC* tacVecAttribution(AST_NODE* node, TAC* code0, TAC* code1);
 TAC* tacIf(TAC* code0, TAC* code1);
 TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2);
-
+TAC* tacWhile(TAC* code0, TAC* code1);
+TAC* tacVarDeclaration(AST_NODE* node, TAC* code0);
 
 #endif

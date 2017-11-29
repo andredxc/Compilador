@@ -47,6 +47,11 @@ TAC* tacGenerate(AST_NODE* node){
             // tacPrintBack(result);
             break;
 
+        case AST_ATTR_VEC:
+            result = tacVecAttribution(node, code[0], code[1]);
+            tacPrintBack(result);
+            break;
+
         case AST_IF:
             result = tacIf(code[0], code[1]);
             // tacPrintBack(result);
@@ -54,47 +59,71 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_IF_ELSE:
             result = tacIfElse(code[0], code[1], code[2]);
-            tacPrintBack(result);
+            // tacPrintBack(result);
             break;
 
         case AST_COMMAND_BLOCK:
             result = tacJoin(code[1], code[0]);
             break;
 
+        case AST_WHILE:
+            result = tacWhile(code[0], code[1]);
+            // tacPrintBack(result);
+            break;
+
+        case AST_RETURN:
+            result = tacCreate(TAC_RETURN, 0, code[0]->res, 0, 0);
+            tacPrintBack(result);
+            break;
+
+        case AST_BYTE:
+        case AST_SHORT:
+        case AST_LONG:
+        case AST_FLOAT:
+        case AST_DOUBLE:
+            return 0;
+
+        case AST_CJTODEC_ELEM:
+            result = tacJoin(code[0], code[1]);
+            break;
+
+        case AST_DEC_VAR_GLOB:
+            break;
+
         default:
             return 0;
 
         /*
-        case AST_READ: fprintf(stderr, "AST_READ\n"); break;
-        case AST_CJTODEC_ELEM: fprintf(stderr, "AST_CJTODEC_ELEM\n"); break;
-        case AST_DEC_VAR_GLOB: fprintf(stderr, "AST_DEC_VAR_GLOB\n"); break;
-        case AST_DEC_VEC_SEQ: fprintf(stderr, "AST_DEC_VEC_SEQ\n"); break;
-        case AST_DEC_VEC: fprintf(stderr, "AST_DEC_VEC\n"); break;
-        case AST_DEC_FUNC: fprintf(stderr, "AST_DEC_FUNC\n"); break;
-        case AST_DEC_PARAM: fprintf(stderr, "AST_DEC_PARAM\n"); break;
-        case AST_DEC_PARAM_VEC: fprintf(stderr, "AST_DEC_PARAM_VEC\n"); break;
-        case AST_COMMAND_BLOCK: fprintf(stderr, "AST_COMMAND_BLOCK\n"); break;
-        case AST_VEC_COMMAND_BLOCK: fprintf(stderr, "AST_VEC_COMMAND_BLOCK\n"); break;
-        case AST_DEC_VAR_BYTE: fprintf(stderr, "AST_DEC_VAR_BYTE\n"); break;
-        case AST_DEC_VAR_SHORT: fprintf(stderr, "AST_DEC_VAR_SHORT\n"); break;
-        case AST_DEC_VAR_LONG: fprintf(stderr, "AST_DEC_VAR_LONG\n"); break;
-        case AST_DEC_VAR_FLOAT: fprintf(stderr, "AST_DEC_VAR_FLOAT\n"); break;
-        case AST_DEC_VAR_DOUBLE: fprintf(stderr, "AST_DEC_VAR_DOUBLE\n"); break;
-        case AST_DEC_VEC_SHORT: fprintf(stderr, "AST_DEC_VEC_SHORT\n"); break;
-        case AST_DEC_VEC_LONG: fprintf(stderr, "AST_DEC_VEC_LONG\n"); break;
-        case AST_DEC_VEC_FLOAT: fprintf(stderr, "AST_DEC_VEC_FLOAT\n"); break;
-        case AST_DEC_VEC_DOUBLE: fprintf(stderr, "AST_DEC_VEC_DOUBLE\n"); break;
-        case AST_DEC_VEC_BYTE: fprintf(stderr, "AST_DEC_VEC_BYTE\n"); break;
-        case AST_CALLFUNC: fprintf(stderr, "AST_CALLFUNC\n"); break;
-        case AST_ATTR_VEC: fprintf(stderr, "AST_ATTR_VEC\n"); break;
-        case AST_PRINT: fprintf(stderr, "AST_PRINT\n"); break;
-        case AST_PRINT_ARG: fprintf(stderr, "AST_PRINT_ARG\n"); break;
-        case AST_PRINT_ARG2: fprintf(stderr, "AST_PRINT_ARG2\n"); break;
-        case AST_IF: fprintf(stderr, "AST_IF\n"); break;
-        case AST_IF_ELSE: fprintf(stderr, "AST_IF_ELSE\n"); break;
-        case AST_WHILE: fprintf(stderr, "AST_WHILE\n"); break;
-        case AST_FUNC_ARG_LIST: fprintf(stderr, "AST_FUNC_ARG_LIST\n"); break;
-        case AST_RETURN: fprintf(stderr, "AST_RETURN\n"); break;
+
+        AST_READ
+        AST_PRINT
+        AST_PRINT_ARG
+
+        AST_DEC_VEC_SEQ_LIT ?não encontrei no parser?
+
+
+        AST_DEC_VEC_SEQ
+        AST_DEC_VEC
+        AST_VAR_INFO
+        AST_DEC_FUNC
+        AST_DEC_PARAM
+        AST_DEC_PARAM_VEC
+        AST_COMMAND_BLOCK
+        AST_VEC_COMMAND_BLOCK
+        AST_DEC_VAR_BYTE
+        AST_DEC_VAR_SHORT
+        AST_DEC_VAR_LONG
+        AST_DEC_VAR_FLOAT
+        AST_DEC_VAR_DOUBLE
+        AST_DEC_VEC_SHORT
+        AST_DEC_VEC_LONG
+        AST_DEC_VEC_FLOAT
+        AST_DEC_VEC_DOUBLE
+        AST_DEC_VEC_BYTE
+
+        AST_CALLFUNC
+        AST_FUNC_ARG_LIST
+        AST_PRINT_ARG2
         */
     }
     return result;
@@ -197,6 +226,7 @@ const char* tacGetTypeName(int type){
         case TAC_IFZ: return "TAC_IFZ";
         case TAC_LABEL: return "TAC_LABEL";
         case TAC_JMP: return "TAC_JMP";
+        case TAC_RETURN: return "TAC_RETURN";
     }
 }
 
@@ -270,6 +300,17 @@ TAC* tacVarAttribution(AST_NODE* node, TAC* code0){
     return tacJoin(code0, tac);
 }
 
+TAC* tacVecAttribution(AST_NODE* node, TAC* code0, TAC* code1){
+
+    TAC *tacVecAccess;
+
+    tacVecAccess = tacVectorAccess(node, code0);
+
+    return tacJoin(code1, tacJoin(tacVecAccess, tacCreate(TAC_MOVE, tacVecAccess->res, code1->res, 0, 0)));
+
+    //TK_IDENTIFIER '[' expression ']' '=' expression   {$$ = astCreate(AST_ATTR_VEC, $1, $3, $6, 0, 0);}
+}
+
 TAC* tacIf(TAC* code0, TAC* code1){
 
     HASH_NODE* label;
@@ -304,4 +345,31 @@ TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2){
     // code1
     // tacIfz -> elseLabel
     // code0
+}
+
+TAC* tacWhile(TAC* code0, TAC* code1){
+
+    HASH_NODE *endLabel, *beginLabel;
+    TAC *tacIfz, *tacJump, *tacBeginLabel, *tacEndLabel;
+
+    beginLabel = makeLabel();
+    endLabel = makeLabel();
+
+    tacBeginLabel = tacCreate(TAC_LABEL, beginLabel, 0, 0, 0);
+    tacEndLabel = tacCreate(TAC_LABEL, endLabel, 0, 0, 0);
+    tacIfz = tacCreate(TAC_IFZ, endLabel, code0->res, 0, 0);
+    tacJump = tacCreate(TAC_JMP, beginLabel, 0, 0, 0);
+
+    return tacJoin(code0, tacJoin(tacBeginLabel, tacJoin(tacIfz, tacJoin(code1, tacJoin(tacJump, tacEndLabel)))));
+
+    // tacEndLabel
+    // tacJump -> beginLabel
+    // code1
+    // tacIfz -> endLabel
+    // tacBeginLabel
+    // code0
+}
+
+TAC* tacVarDeclaration(AST_NODE* node, TAC* code0){
+    
 }
