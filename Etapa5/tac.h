@@ -24,6 +24,7 @@
 #define TAC_MOVE        16
 #define TAC_IFZ         17
 #define TAC_LABEL       18
+#define TAC_JMP         19
 
 typedef struct tac{
 
@@ -50,5 +51,7 @@ TAC* tacOp(AST_NODE* node, TAC* code0, TAC* code1);
 TAC* tacVectorAccess(AST_NODE* node, TAC* code0);
 TAC* tacVarAttribution(AST_NODE* node, TAC* code0);
 TAC* tacIf(TAC* code0, TAC* code1);
+TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2);
+
 
 #endif

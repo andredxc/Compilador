@@ -49,7 +49,16 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_IF:
             result = tacIf(code[0], code[1]);
+            // tacPrintBack(result);
+            break;
+
+        case AST_IF_ELSE:
+            result = tacIfElse(code[0], code[1], code[2]);
             tacPrintBack(result);
+            break;
+
+        case AST_COMMAND_BLOCK:
+            result = tacJoin(code[1], code[0]);
             break;
 
         default:
@@ -187,6 +196,7 @@ const char* tacGetTypeName(int type){
         case TAC_MOVE: return "TAC_MOVE";
         case TAC_IFZ: return "TAC_IFZ";
         case TAC_LABEL: return "TAC_LABEL";
+        case TAC_JMP: return "TAC_JMP";
     }
 }
 
@@ -263,11 +273,35 @@ TAC* tacVarAttribution(AST_NODE* node, TAC* code0){
 TAC* tacIf(TAC* code0, TAC* code1){
 
     HASH_NODE* label;
-    TAC* tacIfz;
-    TAC* tacLabel;
+    TAC *tacIfz, *tacLabel;
 
     label = makeLabel();
     tacIfz = tacCreate(TAC_IFZ, label, code0->res, 0, 0);
     tacLabel = tacCreate(TAC_LABEL, label, 0, 0, 0);
     return tacJoin(code0, tacJoin(tacIfz, tacJoin(code1, tacLabel)));
+}
+
+TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2){
+
+    HASH_NODE *elseLabel, *endLabel;
+    TAC *tacIfz, *tacElseLabel, *tacJump, *tacEndLabel;
+
+    elseLabel = makeLabel();
+    endLabel = makeLabel();
+
+    tacIfz = tacCreate(TAC_IFZ, elseLabel, code0->res, 0, 0);
+    tacElseLabel = tacCreate(TAC_LABEL, elseLabel, 0, 0, 0);
+    tacJump = tacCreate(TAC_JMP, endLabel, 0, 0, 0);
+    tacEndLabel = tacCreate(TAC_LABEL, endLabel, 0, 0, 0);
+
+    return tacJoin(code0, tacJoin(tacIfz, tacJoin(code1, tacJoin(tacJump,
+        tacJoin(tacElseLabel, tacJoin(code2, tacEndLabel))))));
+
+    // tacEndLabel
+    // code2
+    // tacElseLabel
+    // tacJump -> endLabel
+    // code1
+    // tacIfz -> elseLabel
+    // code0
 }
