@@ -73,7 +73,7 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_RETURN:
             result = tacCreate(TAC_RETURN, 0, code[0]->res, 0, 0);
-            tacPrintBack(result);
+            // tacPrintBack(result);
             break;
 
         case AST_BYTE:
@@ -88,6 +88,28 @@ TAC* tacGenerate(AST_NODE* node){
             break;
 
         case AST_DEC_VAR_GLOB:
+            result = tacVarDeclaration(node, code[0]);
+            tacPrintBack(result);
+            break;
+
+        case AST_DEC_VAR_BYTE:
+        case AST_DEC_VAR_SHORT:
+        case AST_DEC_VAR_LONG:
+        case AST_DEC_VAR_FLOAT:
+        case AST_DEC_VAR_DOUBLE:
+            result = tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0);
+            break;
+
+        case AST_DEC_VEC:
+            result = tacJoin(code[0], tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0));
+            break;
+
+        case AST_DEC_VEC_SHORT:
+        case AST_DEC_VEC_LONG:
+        case AST_DEC_VEC_FLOAT:
+        case AST_DEC_VEC_DOUBLE:
+        case AST_DEC_VEC_BYTE:
+        result = tacJoin(code[0], tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0));
             break;
 
         default:
@@ -100,30 +122,19 @@ TAC* tacGenerate(AST_NODE* node){
         AST_PRINT_ARG
 
         AST_DEC_VEC_SEQ_LIT ?não encontrei no parser?
-
-
-        AST_DEC_VEC_SEQ
-        AST_DEC_VEC
         AST_VAR_INFO
+        AST_DEC_VEC_SEQ
+        AST_PRINT_ARG2
+
+
         AST_DEC_FUNC
         AST_DEC_PARAM
         AST_DEC_PARAM_VEC
         AST_COMMAND_BLOCK
         AST_VEC_COMMAND_BLOCK
-        AST_DEC_VAR_BYTE
-        AST_DEC_VAR_SHORT
-        AST_DEC_VAR_LONG
-        AST_DEC_VAR_FLOAT
-        AST_DEC_VAR_DOUBLE
-        AST_DEC_VEC_SHORT
-        AST_DEC_VEC_LONG
-        AST_DEC_VEC_FLOAT
-        AST_DEC_VEC_DOUBLE
-        AST_DEC_VEC_BYTE
 
         AST_CALLFUNC
         AST_FUNC_ARG_LIST
-        AST_PRINT_ARG2
         */
     }
     return result;
@@ -227,6 +238,8 @@ const char* tacGetTypeName(int type){
         case TAC_LABEL: return "TAC_LABEL";
         case TAC_JMP: return "TAC_JMP";
         case TAC_RETURN: return "TAC_RETURN";
+        case TAC_VARDEC: return "TAC_VARDEC";
+        case TAC_VECDEC: return "TAC_VECDEC";
     }
 }
 
@@ -371,5 +384,13 @@ TAC* tacWhile(TAC* code0, TAC* code1){
 }
 
 TAC* tacVarDeclaration(AST_NODE* node, TAC* code0){
-    
+
+    if(node->symbol->symbol.nature == NATURE_VARIABLE){
+
+        return tacJoin(code0, tacCreate(TAC_VARDEC, node->symbol, code0->res, 0, 0));
+    }
+    else if(node->symbol->symbol.nature == NATURE_ARRAY){
+
+        return tacJoin(code0, tacCreate(TAC_VECDEC, node->symbol, code0->res, 0, 0));
+    }
 }

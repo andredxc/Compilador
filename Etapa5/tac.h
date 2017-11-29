@@ -26,6 +26,8 @@
 #define TAC_LABEL       18
 #define TAC_JMP         19
 #define TAC_RETURN      20
+#define TAC_VARDEC      21
+#define TAC_VECDEC      22
 
 typedef struct tac{
 
