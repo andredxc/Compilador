@@ -40,7 +40,7 @@ void main(int argc, char **argv  ){
         exit(4);
     }
 
-    tacGenerate(ast);
+    tacPrintBack(tacGenerate(ast));
 
     fprintf(stderr, "Concluído com sucesso\n");
 	exit(0);

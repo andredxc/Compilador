@@ -30,6 +30,10 @@
 #define TAC_VECDEC      22
 #define TAC_READ        23
 #define TAC_PRINT       24
+#define TAC_PRINT_ARG   25
+#define TAC_BEGINFUNC   26
+#define TAC_ENDFUNC     27
+#define TAC_PARAM       28
 
 typedef struct tac{
 
@@ -62,5 +66,9 @@ TAC* tacWhile(TAC* code0, TAC* code1);
 TAC* tacVarDeclaration(AST_NODE* node, TAC* code0);
 TAC* makeRead(HASH_NODE* identifier);
 TAC* makePrint(AST_NODE* print, TAC** code);
+TAC* tacPrintArg(AST_NODE* node, TAC* code0, TAC* code1);
+TAC* tacFuncDec(AST_NODE* node, TAC* code0, TAC* code1, TAC* code2);
+TAC* tacFuncParam(AST_NODE* node);
+TAC* tacFuncParamVec(TAC* code0, TAC* code1);
 
 #endif
