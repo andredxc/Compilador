@@ -34,6 +34,8 @@
 #define TAC_BEGINFUNC   26
 #define TAC_ENDFUNC     27
 #define TAC_PARAM       28
+#define TAC_CALL        29
+#define TAC_ARG         30
 
 typedef struct tac{
 
@@ -72,5 +74,7 @@ TAC* tacPrintArg(AST_NODE* node, TAC* code0, TAC* code1);
 TAC* tacFuncDec(AST_NODE* node, TAC* code0, TAC* code1, TAC* code2);
 TAC* tacFuncParam(AST_NODE* node);
 TAC* tacFuncParamVec(TAC* code0, TAC* code1);
+TAC* tacFuncCall(AST_NODE* node, TAC* code0);
+TAC* tacFuncArgs(TAC* son0, TAC* son1);
 
 #endif

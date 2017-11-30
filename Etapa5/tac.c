@@ -135,12 +135,19 @@ TAC* tacGenerate(AST_NODE* node){
             result = tacFuncParam(node);
             break;
 
+        case AST_CALLFUNC:
+            result = tacFuncCall(node, code[0]);
+            break;
+
+        case AST_FUNC_ARG_LIST:
+            result = tacFuncArgs(code[0], code[1]);
+            break;
+
         default:
-            result = tacJoin( tacJoin( tacJoin(code[0], code[1]), code[2]), code[3]);
+            result = tacJoin(tacJoin( tacJoin(code[0], code[1]), code[2]), code[3]);
 
         /*
 
-        AST_CALLFUNC
         AST_FUNC_ARG_LIST
         */
     }
@@ -282,6 +289,8 @@ const char* tacGetTypeName(int type){
         case TAC_BEGINFUNC: return "TAC_BEGINFUNC";
         case TAC_ENDFUNC: return "TAC_ENDFUNC";
         case TAC_PARAM: return "TAC_PARAM";
+        case TAC_CALL: return "TAC_CALL";
+        case TAC_ARG: return "TAC_ARG";
     }
 }
 
@@ -500,4 +509,19 @@ TAC* tacFuncParam(AST_NODE* node){
 TAC* tacFuncParamVec(TAC* code0, TAC* code1){
 
     return tacJoin(code0, code1);
+}
+
+TAC* tacFuncCall(AST_NODE* node, TAC* code0){
+
+    HASH_NODE* temp;
+    TAC* funcCall;
+
+    temp = makeTemporary();
+    funcCall = tacCreate(TAC_CALL, temp, node->symbol, 0, 0);
+    return tacJoin(code0, funcCall);
+}
+
+TAC* tacFuncArgs(TAC* son0, TAC* son1){
+
+    return tacJoin(tacJoin(son0, tacCreate(TAC_ARG, son0->res, 0, 0, 0)), son1);
 }
