@@ -44,22 +44,22 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_ATTR:
             result = tacVarAttribution(node, code[0]);
-            // tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_ATTR_VEC:
             result = tacVecAttribution(node, code[0], code[1]);
-            tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_IF:
             result = tacIf(code[0], code[1]);
-            // tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_IF_ELSE:
             result = tacIfElse(code[0], code[1], code[2]);
-            // tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_COMMAND_BLOCK:
@@ -68,12 +68,12 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_WHILE:
             result = tacWhile(code[0], code[1]);
-            // tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_RETURN:
             result = tacCreate(TAC_RETURN, 0, code[0]->res, 0, 0);
-            // tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_BYTE:
@@ -89,7 +89,7 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_DEC_VAR_GLOB:
             result = tacVarDeclaration(node, code[0]);
-            tacPrintBack(result);
+            //tacPrintBack(result);
             break;
 
         case AST_DEC_VAR_BYTE:
@@ -109,16 +109,20 @@ TAC* tacGenerate(AST_NODE* node){
         case AST_DEC_VEC_FLOAT:
         case AST_DEC_VEC_DOUBLE:
         case AST_DEC_VEC_BYTE:
-        result = tacJoin(code[0], tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0));
+        	result = tacJoin(code[0], tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0));
             break;
-
+		
+		case AST_READ:
+			result = makeRead(node->symbol);
+			tacPrintBack(result);
+			break;
         default:
             return 0;
 
         /*
 
-        AST_READ
-        AST_PRINT
+
+      
         AST_PRINT_ARG
 
         AST_DEC_VEC_SEQ_LIT ?não encontrei no parser?
@@ -174,7 +178,7 @@ TAC* tacJoin(TAC* list1, TAC* list2){
     }
 
     tac->prev = list1;
-    list1->next - tac;
+    list1->next = tac;
     return list2;
 }
 
@@ -394,3 +398,17 @@ TAC* tacVarDeclaration(AST_NODE* node, TAC* code0){
         return tacJoin(code0, tacCreate(TAC_VECDEC, node->symbol, code0->res, 0, 0));
     }
 }
+
+TAC* makeRead(HASH_NODE* identifier){
+
+	TAC* symbol = tacCreate(TAC_SYMBOL, identifier,0,0,0);
+	TAC* ret = tacCreate(TAC_READ,identifier, 0, 0,0);
+	return tacJoin(symbol,ret);
+}
+
+
+
+
+
+
+

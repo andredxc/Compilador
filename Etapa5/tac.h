@@ -28,6 +28,8 @@
 #define TAC_RETURN      20
 #define TAC_VARDEC      21
 #define TAC_VECDEC      22
+#define TAC_READ        23
+
 
 typedef struct tac{
 
@@ -58,5 +60,6 @@ TAC* tacIf(TAC* code0, TAC* code1);
 TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2);
 TAC* tacWhile(TAC* code0, TAC* code1);
 TAC* tacVarDeclaration(AST_NODE* node, TAC* code0);
+TAC* makeRead(HASH_NODE* identifier);
 
 #endif
