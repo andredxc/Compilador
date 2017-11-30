@@ -44,22 +44,18 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_ATTR:
             result = tacVarAttribution(node, code[0]);
-            //tacPrintBack(result);
             break;
 
         case AST_ATTR_VEC:
             result = tacVecAttribution(node, code[0], code[1]);
-            //tacPrintBack(result);
             break;
 
         case AST_IF:
             result = tacIf(code[0], code[1]);
-            //tacPrintBack(result);
             break;
 
         case AST_IF_ELSE:
             result = tacIfElse(code[0], code[1], code[2]);
-            //tacPrintBack(result);
             break;
 
         case AST_VEC_COMMAND_BLOCK:
@@ -68,17 +64,14 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_COMMAND_BLOCK:
             result = tacJoin(code[0], code[1]);
-            // tacPrintBack(result);
             break;
 
         case AST_WHILE:
             result = tacWhile(code[0], code[1]);
-            //tacPrintBack(result);
             break;
 
         case AST_RETURN:
             result = tacCreate(TAC_RETURN, 0, code[0]->res, 0, 0);
-            //tacPrintBack(result);
             break;
 
         case AST_BYTE:
@@ -94,7 +87,6 @@ TAC* tacGenerate(AST_NODE* node){
 
         case AST_DEC_VAR_GLOB:
             result = tacVarDeclaration(node, code[0]);
-            //tacPrintBack(result);
             break;
 
         case AST_DEC_VAR_BYTE:
@@ -127,23 +119,20 @@ TAC* tacGenerate(AST_NODE* node){
             break;
 
 		case AST_PRINT:
-			result = makePrint(node, code);
-			// tacPrintBack(result);
+			result = makePrint(node, code[0]);
+            result = code[0];
 			break;
 
         case AST_DEC_FUNC:
             result = tacFuncDec(node, code[0], code[1], code[2]);
-            // tacPrintBack(result);
             break;
 
         case AST_DEC_PARAM_VEC:
             result = tacFuncParamVec(code[0], code[1]);
-            // tacPrintBack(result);
             break;
 
         case AST_DEC_PARAM:
             result = tacFuncParam(node);
-            // tacPrintBack(result);
             break;
 
         default:
@@ -426,36 +415,41 @@ TAC* makeRead(HASH_NODE* identifier){
 	return tacJoin(symbol, ret);
 }
 
-TAC* makePrint(AST_NODE* print, TAC** code){
-	AST_NODE* buff = 0;
-	TAC* prints = 0;
-	TAC* tacBuff = 0;
-	TAC* tacPrint = 0;
-	buff = print->son[0];
-	while(buff){
-		if(buff->symbol){
-			tacBuff = tacCreate(TAC_SYMBOL,buff->symbol, 0, 0, 0);
-			buff = buff->son[0];
-		}else{
-			tacBuff = tacGenerate(buff->son[0]);
-			buff = buff->son[1];
-		}
-		tacPrint = tacCreate(TAC_PRINT,tacBuff ? tacBuff->res: 0,0,0,0);
-		prints = tacJoin(tacJoin(prints,tacBuff),tacPrint);
-	}
+TAC* makePrint(AST_NODE* print, TAC* code0){
+	// AST_NODE* buff = 0;
+	// TAC* prints = 0;
+	// TAC* tacBuff = 0;
+	// TAC* tacPrint = 0;
+	// buff = print->son[0];
+	// while(buff){
+	// 	if(buff->symbol){
+	// 		tacBuff = tacCreate(TAC_SYMBOL,buff->symbol, 0, 0, 0);
+	// 		buff = buff->son[0];
+	// 	}else{
+	// 		tacBuff = tacGenerate(buff->son[0]);
+	// 		buff = buff->son[1];
+	// 	}
+	// 	tacPrint = tacCreate(TAC_PRINT,tacBuff ? tacBuff->res: 0,0,0,0);
+	// 	prints = tacJoin(tacJoin(prints,tacBuff),tacPrint);
+	// }
 
-	return prints;
+    TAC* tacPrint;
+
+    tacPrint = tacCreate(TAC_PRINT, code0->res, 0, 0, 0);
+    return tacJoin(code0, tacPrint);
+
+	return tacPrint;
 }
 
 TAC* tacPrintArg(AST_NODE* node, TAC* code0, TAC* code1){
 
     if(node->symbol){
 
-        return tacJoin(tacCreate(TAC_PRINT_ARG, node->symbol, 0, 0, 0), code1);
+        return tacJoin(tacCreate(TAC_PRINT, node->symbol, 0, 0, 0), code1);
     }
     else{
 
-        return tacJoin(code0, code1);
+        return tacJoin(tacCreate(TAC_PRINT, code0->res, 0, 0, 0), code1);
     }
 }
 

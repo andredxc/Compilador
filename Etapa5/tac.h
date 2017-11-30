@@ -65,7 +65,7 @@ TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2);
 TAC* tacWhile(TAC* code0, TAC* code1);
 TAC* tacVarDeclaration(AST_NODE* node, TAC* code0);
 TAC* makeRead(HASH_NODE* identifier);
-TAC* makePrint(AST_NODE* print, TAC** code);
+TAC* makePrint(AST_NODE* print, TAC* code);
 TAC* tacPrintArg(AST_NODE* node, TAC* code0, TAC* code1);
 TAC* tacFuncDec(AST_NODE* node, TAC* code0, TAC* code1, TAC* code2);
 TAC* tacFuncParam(AST_NODE* node);
