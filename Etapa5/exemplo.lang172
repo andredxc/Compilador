@@ -5,7 +5,7 @@ i: long = 0;
 v: long[10] 0 0 0 0 0 0 0 0 0 0;
 vector: long[10];
 mat: long[10];
-f: float = 0;
+f: float = 0.0;
 c: byte = 'x';
 d: byte = 65;
 
@@ -24,7 +24,6 @@ d: byte = 65;
   while (i<10)
     {
     a = incn(a,1+3,2,2,2, 3);
-    a = function();
     i = 2*3+1*(i+3+2) + 1
     };
   print "Incrementado algumas vezes fica ",a,"\n";

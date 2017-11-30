@@ -111,18 +111,19 @@ TAC* tacGenerate(AST_NODE* node){
         case AST_DEC_VEC_BYTE:
         	result = tacJoin(code[0], tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0));
             break;
-		
+
 		case AST_READ:
 			result = makeRead(node->symbol);
 			tacPrintBack(result);
 			break;
+
         default:
             return 0;
 
         /*
 
 
-      
+
         AST_PRINT_ARG
 
         AST_DEC_VEC_SEQ_LIT ?não encontrei no parser?
@@ -244,6 +245,7 @@ const char* tacGetTypeName(int type){
         case TAC_RETURN: return "TAC_RETURN";
         case TAC_VARDEC: return "TAC_VARDEC";
         case TAC_VECDEC: return "TAC_VECDEC";
+        case TAC_READ: return "TAC_READ";
     }
 }
 
@@ -403,12 +405,5 @@ TAC* makeRead(HASH_NODE* identifier){
 
 	TAC* symbol = tacCreate(TAC_SYMBOL, identifier,0,0,0);
 	TAC* ret = tacCreate(TAC_READ,identifier, 0, 0,0);
-	return tacJoin(symbol,ret);
+	return tacJoin(symbol, ret);
 }
-
-
-
-
-
-
-
