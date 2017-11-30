@@ -29,7 +29,7 @@
 #define TAC_VARDEC      21
 #define TAC_VECDEC      22
 #define TAC_READ        23
-
+#define TAC_PRINT       24
 
 typedef struct tac{
 
@@ -61,5 +61,6 @@ TAC* tacIfElse(TAC* code0, TAC* code1, TAC* code2);
 TAC* tacWhile(TAC* code0, TAC* code1);
 TAC* tacVarDeclaration(AST_NODE* node, TAC* code0);
 TAC* makeRead(HASH_NODE* identifier);
+TAC* makePrint(AST_NODE* print, TAC** code);
 
 #endif

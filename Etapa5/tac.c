@@ -110,10 +110,15 @@ TAC* tacGenerate(AST_NODE* node){
         case AST_DEC_VEC_DOUBLE:
         case AST_DEC_VEC_BYTE:
         	result = tacJoin(code[0], tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0));
+
             break;
 
 		case AST_READ:
 			result = makeRead(node->symbol);
+			tacPrintBack(result);
+			break;
+		case AST_PRINT:
+			result = makePrint(node, code);
 			tacPrintBack(result);
 			break;
 
@@ -246,6 +251,7 @@ const char* tacGetTypeName(int type){
         case TAC_VARDEC: return "TAC_VARDEC";
         case TAC_VECDEC: return "TAC_VECDEC";
         case TAC_READ: return "TAC_READ";
+        case TAC_PRINT: return "TAC_PRINT";
     }
 }
 
@@ -407,3 +413,26 @@ TAC* makeRead(HASH_NODE* identifier){
 	TAC* ret = tacCreate(TAC_READ,identifier, 0, 0,0);
 	return tacJoin(symbol, ret);
 }
+
+TAC* makePrint(AST_NODE* print, TAC** code){
+	AST_NODE* buff = 0;
+	TAC* prints = 0;
+	TAC* tacBuff = 0;
+	TAC* tacPrint = 0;
+	buff = print->son[0];
+	while(buff){				
+		if(buff->symbol){
+			tacBuff = tacCreate(TAC_SYMBOL,buff->symbol, 0, 0, 0);
+			buff = buff->son[0];
+		}else{
+			tacBuff = tacGenerate(buff->son[0]);
+			buff = buff->son[1];
+		}
+		tacPrint = tacCreate(TAC_PRINT,tacBuff ? tacBuff->res: 0,0,0,0);	
+		prints = tacJoin(tacJoin(prints,tacBuff),tacPrint);
+	}
+	
+	return prints;
+}
+
+
