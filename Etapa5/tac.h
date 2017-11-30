@@ -50,6 +50,8 @@ TAC* tacGenerate(AST_NODE* node);
 TAC* tacCreate(int type, HASH_NODE* res, HASH_NODE* op1, HASH_NODE* op2, HASH_NODE* op3);
 TAC* tacJoin(TAC* list1, TAC* list2);
 void tacPrintBack(TAC* last);
+void tacPrintForward(TAC* first);
+TAC* tacReverse(TAC* last);
 void tacPrintSingle(TAC* tac);
 const char* tacGetTypeName(int type);
 

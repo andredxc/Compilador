@@ -199,6 +199,35 @@ void tacPrintBack(TAC* node){
     fprintf(stderr, "tacPrintBack--------End\n");
 }
 
+void tacPrintForward(TAC* first){
+
+    TAC* tac;
+    fprintf(stderr, "\n   tacPrintForward\n" );
+    for (tac = first; tac; tac = tac->next){
+
+        tacPrintSingle(tac);
+    }
+}
+
+TAC* tacReverse(TAC* last){
+
+    TAC* newTac;
+
+    if(!last){
+        return 0;
+    }
+
+    newTac = tacCreate(last->type, last->res, last->op1, last->op2, last->op3);
+    // tacPrintSingle(newTac);
+
+    if(!last->prev){
+        return newTac;
+    }
+    else{
+        return tacJoin(newTac, tacReverse(last->prev));
+    }
+}
+
 void tacPrintSingle(TAC* node){
 
     if(!node){
