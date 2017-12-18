@@ -37,7 +37,7 @@ TAC* tacGenerate(AST_NODE* node){
             result = tacOp(node, code[0], code[1]); break;
 
         case AST_ARRAY:
-            result = tacVectorAccess(node, code[0]); break;
+            result = tacVectorRead(node, code[0]); break;
 
         case AST_EXPRESSION:
             result = code[0]; break;
@@ -71,7 +71,7 @@ TAC* tacGenerate(AST_NODE* node){
             break;
 
         case AST_RETURN:
-            result = tacCreate(TAC_RETURN, 0, code[0]->res, 0, 0);
+            result = tacJoin(code[0], tacCreate(TAC_RETURN, 0, code[0]->res, 0, 0));
             break;
 
         case AST_BYTE:
@@ -250,10 +250,10 @@ void tacPrintSingle(TAC* node){
         fprintf(stderr, " | OP2: %s", node->op2->symbol.text);
     if(node->op3)
         fprintf(stderr, " | OP3: %s", node->op3->symbol.text);
-    if(node->next)
-        fprintf(stderr, " | next: %p", node->next);
-    if(node->prev)
-        fprintf(stderr, " | prev: %p", node->prev);
+    // if(node->next)
+    //     fprintf(stderr, " | next: %p", node->next);
+    // if(node->prev)
+    //     fprintf(stderr, " | prev: %p", node->prev);
 
     fprintf(stderr, "\n");
 }
@@ -275,7 +275,7 @@ const char* tacGetTypeName(int type){
         case TAC_AND: return "TAC_AND";
         case TAC_OR: return "TAC_OR";
         case TAC_NOT: return "TAC_NOT";
-        case TAC_VEC_ACCESS: return "TAC_VEC_ACCESS";
+        case TAC_VEC_READ: return "TAC_VEC_READ";
         case TAC_MOVE: return "TAC_MOVE";
         case TAC_IFZ: return "TAC_IFZ";
         case TAC_LABEL: return "TAC_LABEL";
@@ -291,6 +291,7 @@ const char* tacGetTypeName(int type){
         case TAC_PARAM: return "TAC_PARAM";
         case TAC_CALL: return "TAC_CALL";
         case TAC_ARG: return "TAC_ARG";
+        case TAC_VEC_WRITE: return "TAC_VEC_WRITE";
     }
 }
 
@@ -346,13 +347,13 @@ TAC* tacOp(AST_NODE* node, TAC* code0, TAC* code1){
     return tacJoin(tacJoin(code0, code1), tac);
 }
 
-TAC* tacVectorAccess(AST_NODE* node, TAC* code0){
+TAC* tacVectorRead(AST_NODE* node, TAC* code0){
 
     HASH_NODE* temp;
     TAC* tac;
 
     temp = makeTemporary();
-    tac = tacCreate(TAC_VEC_ACCESS, temp, node->symbol, code0->res, 0);
+    tac = tacCreate(TAC_VEC_READ, temp, node->symbol, code0->res, 0);
     return tacJoin(code0, tac);
 }
 
@@ -368,9 +369,9 @@ TAC* tacVecAttribution(AST_NODE* node, TAC* code0, TAC* code1){
 
     TAC *tacVecAccess;
 
-    tacVecAccess = tacVectorAccess(node, code0);
+    return tacJoin(code1, tacJoin(code0, tacCreate(TAC_VEC_WRITE, node->symbol, code0->res, code1->res, 0)));
+    //return tacJoin(code1, tacJoin(tacVecAccess, tacCreate(TAC_MOVE, tacVecAccess->res, code1->res, 0, 0)));
 
-    return tacJoin(code1, tacJoin(tacVecAccess, tacCreate(TAC_MOVE, tacVecAccess->res, code1->res, 0, 0)));
 
     //TK_IDENTIFIER '[' expression ']' '=' expression   {$$ = astCreate(AST_ATTR_VEC, $1, $3, $6, 0, 0);}
 }
@@ -424,7 +425,7 @@ TAC* tacWhile(TAC* code0, TAC* code1){
     tacIfz = tacCreate(TAC_IFZ, endLabel, code0->res, 0, 0);
     tacJump = tacCreate(TAC_JMP, beginLabel, 0, 0, 0);
 
-    return tacJoin(code0, tacJoin(tacBeginLabel, tacJoin(tacIfz, tacJoin(code1, tacJoin(tacJump, tacEndLabel)))));
+    return tacJoin(tacBeginLabel, tacJoin(code0, tacJoin(tacIfz, tacJoin(code1, tacJoin(tacJump, tacEndLabel)))));
 
     // tacEndLabel
     // tacJump -> beginLabel
@@ -487,7 +488,7 @@ TAC* tacPrintArg(AST_NODE* node, TAC* code0, TAC* code1){
     }
     else{
 
-        return tacJoin(tacCreate(TAC_PRINT, code0->res, 0, 0, 0), code1);
+        return tacJoin(code0, tacJoin(tacCreate(TAC_PRINT, code0->res, 0, 0, 0), code1));
     }
 }
 

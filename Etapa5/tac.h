@@ -20,7 +20,7 @@
 #define TAC_AND         12
 #define TAC_OR          13
 #define TAC_NOT         14
-#define TAC_VEC_ACCESS  15
+#define TAC_VEC_READ  15
 #define TAC_MOVE        16
 #define TAC_IFZ         17
 #define TAC_LABEL       18
@@ -36,6 +36,7 @@
 #define TAC_PARAM       28
 #define TAC_CALL        29
 #define TAC_ARG         30
+#define TAC_VEC_WRITE   31
 
 typedef struct tac{
 
@@ -61,7 +62,7 @@ HASH_NODE* makeTemporary();
 HASH_NODE* makeLabel();
 
 TAC* tacOp(AST_NODE* node, TAC* code0, TAC* code1);
-TAC* tacVectorAccess(AST_NODE* node, TAC* code0);
+TAC* tacVectorRead(AST_NODE* node, TAC* code0);
 TAC* tacVarAttribution(AST_NODE* node, TAC* code0);
 TAC* tacVecAttribution(AST_NODE* node, TAC* code0, TAC* code1);
 TAC* tacIf(TAC* code0, TAC* code1);
