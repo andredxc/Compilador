@@ -209,11 +209,12 @@ void tacPrintBack(TAC* node){
 void tacPrintForward(TAC* first){
 
     TAC* tac;
-    fprintf(stderr, "\n   tacPrintForward\n" );
+    fprintf(stderr, "tacPrintForward--------Start\n");
     for (tac = first; tac; tac = tac->next){
 
         tacPrintSingle(tac);
     }
+    fprintf(stderr, "tacPrintForward--------End\n");
 }
 
 TAC* tacReverse(TAC* last){
@@ -225,10 +226,11 @@ TAC* tacReverse(TAC* last){
     }
 
     newTac = tacCreate(last->type, last->res, last->op1, last->op2, last->op3);
-    // tacPrintSingle(newTac);
+    fprintf(stderr, "Reversing \n");
+    tacPrintSingle(newTac);
 
     if(!last->prev){
-        return newTac;
+        return tacJoin(newTac, last);
     }
     else{
         return tacJoin(newTac, tacReverse(last->prev));

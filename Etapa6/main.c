@@ -9,6 +9,7 @@
 #include "y.tab.h"
 #include "semantic.h"
 #include "tac.h"
+#include "asm.h"
 
 extern FILE* yyin;
 extern int yylex();
@@ -18,6 +19,7 @@ extern int initMe();
 void main(int argc, char **argv  ){
 
 	int token;
+    TAC *first;
 
 	if(argc < 2){
 	    fprintf(stderr, "Uso: ./executavel <arquivo>\n");
@@ -40,7 +42,9 @@ void main(int argc, char **argv  ){
         exit(4);
     }
 
-    tacPrintBack(tacReverse(tacGenerate(ast)));
+    first = tacReverse(tacGenerate(ast));
+    tacPrintForward(first);
+    asmGenerate(first);
 
     fprintf(stderr, "Concluído com sucesso\n");
 	exit(0);
