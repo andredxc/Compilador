@@ -17,6 +17,7 @@ void asmFunctionCall(TAC* tac, FILE* outputFile);
 void asmJump(TAC* tac, FILE* outputFile);
 void asmLabel(TAC* tac, FILE* outputFile);
 void asmBeginFunction(TAC* tac, FILE* outputFile);
+void asmEndFunction(TAC* tac, FILE* outputFile);
 void asmRead(TAC* tac, FILE* outputFile);
 
 void asmVardec(TAC* tac, FILE* outputFile);

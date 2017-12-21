@@ -46,7 +46,7 @@ void asmGenerate(TAC* first){
 			case TAC_PRINT: break;
 			case TAC_PRINT_ARG: break;
 			case TAC_BEGINFUNC: asmBeginFunction(tac, outputFile); break;
-			case TAC_ENDFUNC: break;
+			case TAC_ENDFUNC: asmEndFunction(tac, outputFile); break;
 			case TAC_PARAM: break;
 			case TAC_CALL: asmFunctionCall(tac, outputFile); break;
 			case TAC_ARG: /*ignore*/ break;
@@ -170,8 +170,19 @@ void asmRead(TAC* tac, FILE* outputFile){
 
 void asmBeginFunction(TAC* tac, FILE* outputFile){
 
+	static beginFunctionCount = 0;
     fprintf(outputFile, "\n## TAC_BEGINFUNC\n");
-    fprintf(outputFile, "\t.globl %s\n\t.type %s, @function\n%s:\n\tpushq %%rbp\n\tmovq	%%rsp, %%rbp\n",tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text);
+    fprintf(outputFile, "    .globl	%s\n    .type	%s, @function\n%s:\n.LFB%d:\n    .cfi_startproc\n    pushq	%%rbp\n    .cfi_def_cfa_offset 16\n    .cfi_offset 6, -16\n    movq	%%rsp, %%rbp\n    .cfi_def_cfa_register 6\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, beginFunctionCount);
+    beginFunctionCount++;
+}
+
+void asmEndFunction(TAC* tac, FILE* outputFile){
+	
+	static endFunctionCount = 0;
+	
+	fprintf(outputFile, "\n## TAC_ENDFUNC\n");
+	fprintf(outputFile, "    nop\n    popq	%%rbp\n    .cfi_def_cfa 7, 8\n    ret\n    .cfi_endproc\n.LFE1%d:\n    .size	%s, .-%s\n", endFunctionCount, tac->res->symbol.text, tac->res->symbol.text);
+	endFunctionCount++;
 }
 
 void asmVardec(TAC* tac, FILE* outputFile){
@@ -180,17 +191,24 @@ void asmVardec(TAC* tac, FILE* outputFile){
 
     if(tac->op1->symbol.type == SYMBOL_LIT_REAL){
         //Número real
-        fprintf(outputFile, "\t.globl %s\n\t.type %s, @object\n\t.size %s, 4\n%s:\n\t.long 111111\n", tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text);
+        fprintf(outputFile, "	.globl	%s\n	.align 4\n	.type	%s, @object\n	.size	%s, 4\n%s:\n	.long	1066192077\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text);
     }
     else if(tac->op1->symbol.type == SYMBOL_LIT_CHAR){
         //Char
         char charValue[5];
-        sprintf(charValue , "%d", tac->op1->symbol.text[1]);
-        fprintf(outputFile, "\t.globl %s\n\t.type %s, @object\n\t.size %s, 1\n%s:\n\t.byte %s\n",  tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text, charValue);
+        if(tac->op1->symbol.text[0] == '\''){
+			// Se a variável foi inicializada com um caractere
+			snprintf(charValue, sizeof(charValue), "%d", tac->op1->symbol.text[1]);
+		}
+		else{
+			// Inicializada com um número
+			snprintf(charValue, sizeof(charValue), "%s", tac->op1->symbol.text);
+		}
+        fprintf(outputFile, "    .globl	%s\n	.type	%s, @object\n	.size	%s, 1\n%s:\n	.byte	%s\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, charValue);
     }
     else{
         //Inteiro
-        fprintf(outputFile, "\t.globl %s\n\t.type %s, @object\n\t.size %s, 4\n%s:\n\t.long %s\n", tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text,tac->res->symbol.text, tac->op1->symbol.text);
+        fprintf(outputFile, "    .globl	%s\n    .align 4\n    .type	%s, @object\n    .size	%s, 4\n%s:\n    .long	%s\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->op1->symbol.text);
     }
 }
 
