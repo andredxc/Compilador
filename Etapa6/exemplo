@@ -1,0 +1,22 @@
+
+c: byte = 'x';
+a: long = 2;
+v: long[10] 0 0 0 0 0 0 0 0 0 0;
+outra: float = 2.3;
+
+(long) main(x: long, minha variavel: byte){
+
+    //Acho que tinha problema aqui
+    c = function(a, outra);
+    a = v[5*a];
+    v[a+3] = 4*5;
+    print(c+4);
+    return (x+5);
+    while(a < 0){
+        read > a;
+    }
+}
+
+(long) function(var: long, outra: float){
+
+}

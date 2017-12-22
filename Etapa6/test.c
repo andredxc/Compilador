@@ -1,25 +1,22 @@
 #include <stdio.h>
 
-int varInt = 2;
-int varInt2 = 3;
-float varFloat = 1.1;
-float varFloat2 = 9.9;
-char varChar = 9;
-char varChar2 = 'b';
+int vecInt[5] = {1, 2, 3, 4, 5};
+float vecFloat[10] = {1, 2, 3, 4, 5};
+char vecChar[20] = {1, 2, 3, 4, 5};
+
+int varInt = 9;
+int varInt2;
+float varFloat;
+float varFloat;
+char varChar;
 
 void func();
 
 int main(){
-
-    printf("Ola\n");
-
 }
 
-void func(){
+void func1(){
 
-    varFloat = 1 + 3;
-    varFloat = 1 - 3;
-    varFloat = 1 * 3;
-    varFloat = 1 / 3;
+    printf("%d", varInt);
 
 }

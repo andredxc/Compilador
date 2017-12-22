@@ -23,7 +23,7 @@ tac.o:
 	gcc -c tac.c
 
 asm.o:
-	gcc -c asm.c
+	gcc -c asm.c -g
 
 y.tab.c: parser.y
 	yacc -d -v parser.y

@@ -9,7 +9,7 @@ void asmGenerate(TAC* first){
 	FILE* outputFile;
 	TAC* tac;
 
-	outputFile = fopen("output.asm", "w");
+	outputFile = fopen("output.s", "w");
 
 	if(!outputFile){
 		fprintf(stderr, "Erro abrindo arquivo de saída\n");
@@ -58,64 +58,48 @@ void asmGenerate(TAC* first){
 
 void asmAdd(TAC* tac, FILE* outputFile){
 
-	fprintf(outputFile, "\n## TAC_ADD\n");
+	fprintf(outputFile, "## TAC_ADD\n");
 
-	setOperators(tac, outputFile);
-	if(tac->op1 && tac->op2 && tac->res){
-		fprintf(outputFile, "\taddl	%%edx, %%eax\n\tmovl %%eax, %s(%%rip)\n", tac->res->symbol.text);
-	}else{
-		fprintf(stderr, "Erro interno em asmAdd");
-	}
+    setOperators(tac, outputFile);
+    fprintf(outputFile, "\taddl\t%%edx, %%eax\n\tmovl\t%%eax, %s(%%rip)", tac->res->symbol.text);
 }
 
 void asmSub(TAC* tac, FILE* outputFile){
 
-	fprintf(outputFile, "\n## TAC_SUB\n");
-	setOperators(tac, outputFile);
-	if(tac->op1 && tac->op2 && tac->res){
-		fprintf(outputFile, "\tsubl	%%eax, %%edx\n\tmovl %%edx, %%eax\n\tmovl %%eax, %s(%%rip)\n", tac->res->symbol.text);
-	}
-	else{
-		fprintf(stderr, "Erro interno em asmSub");
-	}
+	fprintf(outputFile, "## TAC_SUB\n");
+
+    setOperators(tac, outputFile);
+    fprintf(outputFile, "\tsubl\t%%edx, %%eax\n\tmovl\t%%eax, %s(%%rip)", tac->res->symbol.text);
 }
 
 void asmMul(TAC* tac, FILE* outputFile){
 
-	fprintf(outputFile, "\n## TAC_MUL\n");
-	setOperators(tac, outputFile);
-	if(tac->op1 && tac->op2 && tac->res){
-		fprintf(outputFile, "\timull %%edx, %%eax\n\tmovl %%eax, %s(%%rip)\n", tac->res->symbol.text);
-	}
-	else{
-		fprintf(stderr, "Erro interno em asmMul");
-	}
+	fprintf(outputFile, "## TAC_MUL\n");
+
+    setOperators(tac, outputFile);
+    fprintf(outputFile, "\tsubl\t%%edx, %%eax\n\tmovl\t%%eax, %s(%%rip)", tac->res->symbol.text);
 }
 
 void asmDiv(TAC* tac, FILE* outputFile){
 
-	fprintf(outputFile, "\n## TAC_DIV\n");
-	if(tac->op1 && tac->op2 && tac->res){
-		if(isdigit(tac->op1->symbol.text[0]) && isdigit(tac->op2->symbol.text[0])){
-			// Dois valores imediatos
-		}
-	}
-	else{
-		fprintf(stderr, "Erro interno em asmMul");
-	}
+	fprintf(outputFile, "## TAC_DIV\n");
+
+    fprintf(outputFile, "\tmovl\t%s(%%rip), %%eax\n\tmovl\t%s(%%rip), %%ecx\n\tcltd\n\tidivl\t%%ecx\n\tmovl\t%%eax, %s(%%rip)", tac->op1->symbol.text, tac->op2->symbol.text, tac->res->symbol.text);
 }
 
+/**/
 void asmJump(TAC* tac, FILE* outputFile){
 
-    fprintf(outputFile, "\n## TAC_JUMP\n");
+    fprintf(outputFile, "## TAC_JUMP\n");
     fprintf(outputFile, "\tjmp .%s\n", tac->res->symbol.text);
 }
 
+/**/
 void asmFunctionCall(TAC* tac, FILE* outputFile){
 
     TAC* paramTemp = tac;
 
-    fprintf(outputFile, "\n## TAC_CALL\n");
+    fprintf(outputFile, "## TAC_CALL\n");
 
     paramTemp = tac->prev;
     while(paramTemp->type == TAC_ARG || paramTemp->type == TAC_SYMBOL){
@@ -138,26 +122,27 @@ void asmFunctionCall(TAC* tac, FILE* outputFile){
 
 void asmMove(TAC* tac, FILE* outputFile){
 
-	fprintf(outputFile, "\n## TAC_MOVE\n");
+	fprintf(outputFile, "## TAC_MOVE\n");
 
 	if(isdigit(tac->op1->symbol.text[0])){
 		//Valor imediato
-		fprintf(outputFile, "\tmovl	$%s, %s(%%rip)\n", tac->op1->symbol.text, tac->res->symbol.text);
+		fprintf(outputFile, "\tmovl\t$%s, %s(%%rip)\n", tac->op1->symbol.text, tac->res->symbol.text);
 	}
 	else{
-		fprintf(outputFile, "\tmovl	%s(%%rip), %%eax\n\tmovl %%eax, %s(%%rip)\n", tac->op1->symbol.text, tac->res->symbol.text);
+		fprintf(outputFile, "\tmovl\t%s(%%rip), %%eax\n\tmovl\t%%eax, %s(%%rip)\n", tac->op1->symbol.text, tac->res->symbol.text);
 	}
 }
 
 void asmLabel(TAC* tac, FILE* outputFile){
 
-    fprintf(outputFile, "\n## TAC_LABEL\n");
+    fprintf(outputFile, "## TAC_LABEL\n");
     fprintf(outputFile, ".%s:\n", tac->res->symbol.text);
 }
 
+/**/
 void asmRead(TAC* tac, FILE* outputFile){
 
-    fprintf(outputFile, "\n##TAC_READ\n");
+    fprintf(outputFile, "##TAC_READ\n");
     if(tac->res->symbol.dataType == DATATYPE_FLOAT || tac->res->symbol.dataType == DATATYPE_DOUBLE){
         fprintf(outputFile,".LC%d:\n\t.string \"%%f\"\n", _printNumber);
     }
@@ -170,28 +155,28 @@ void asmRead(TAC* tac, FILE* outputFile){
 
 void asmBeginFunction(TAC* tac, FILE* outputFile){
 
-	static beginFunctionCount = 0;
-    fprintf(outputFile, "\n## TAC_BEGINFUNC\n");
-    fprintf(outputFile, "    .globl	%s\n    .type	%s, @function\n%s:\n.LFB%d:\n    .cfi_startproc\n    pushq	%%rbp\n    .cfi_def_cfa_offset 16\n    .cfi_offset 6, -16\n    movq	%%rsp, %%rbp\n    .cfi_def_cfa_register 6\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, beginFunctionCount);
+	static int beginFunctionCount = 0;
+    fprintf(outputFile, "## TAC_BEGINFUNC\n");
+    fprintf(outputFile, "\t.globl\t%s\n\t.type\t%s, @function\n%s:\n.LFB%d:\n\t.cfi_startproc\n\tpushq\t%%rbp\n\t.cfi_def_cfa_offset\t16\n\t.cfi_offset\t6, -16\n\tmovq\t%%rsp, %%rbp\n\t.cfi_def_cfa_register\t6\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, beginFunctionCount);
     beginFunctionCount++;
 }
 
 void asmEndFunction(TAC* tac, FILE* outputFile){
-	
-	static endFunctionCount = 0;
-	
-	fprintf(outputFile, "\n## TAC_ENDFUNC\n");
-	fprintf(outputFile, "    nop\n    popq	%%rbp\n    .cfi_def_cfa 7, 8\n    ret\n    .cfi_endproc\n.LFE1%d:\n    .size	%s, .-%s\n", endFunctionCount, tac->res->symbol.text, tac->res->symbol.text);
+
+	static int endFunctionCount = 0;
+
+	fprintf(outputFile, "## TAC_ENDFUNC\n");
+	fprintf(outputFile, "\tnop\n\tpopq\t%%rbp\n\t.cfi_def_cfa 7, 8\n\tret\n\t.cfi_endproc\n.LFE%d:\n\t.size\t%s, %s\n", endFunctionCount, tac->res->symbol.text, tac->res->symbol.text);
 	endFunctionCount++;
 }
 
 void asmVardec(TAC* tac, FILE* outputFile){
 
-    fprintf(outputFile, "\n## TAC_VARDEC\n");
+    fprintf(outputFile, "## TAC_VARDEC\n");
 
     if(tac->op1->symbol.type == SYMBOL_LIT_REAL){
         //Número real
-        fprintf(outputFile, "	.globl	%s\n	.align 4\n	.type	%s, @object\n	.size	%s, 4\n%s:\n	.long	1066192077\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text);
+        fprintf(outputFile, "\t.globl\t%s\n\t.align\t4\n\t.type\t%s, @object\n\t.size\t%s, 4\n%s:\n\t.long\t1066192077\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text);
     }
     else if(tac->op1->symbol.type == SYMBOL_LIT_CHAR){
         //Char
@@ -204,11 +189,11 @@ void asmVardec(TAC* tac, FILE* outputFile){
 			// Inicializada com um número
 			snprintf(charValue, sizeof(charValue), "%s", tac->op1->symbol.text);
 		}
-        fprintf(outputFile, "    .globl	%s\n	.type	%s, @object\n	.size	%s, 1\n%s:\n	.byte	%s\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, charValue);
+        fprintf(outputFile, "\t.globl\t%s\n\t.type\t%s, @object\n\t.size\t%s, 1\n%s:\n\t.byte\t%s\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, charValue);
     }
     else{
         //Inteiro
-        fprintf(outputFile, "    .globl	%s\n    .align 4\n    .type	%s, @object\n    .size	%s, 4\n%s:\n    .long	%s\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->op1->symbol.text);
+        fprintf(outputFile, "\t.globl	%s\n\t.align\t4\n\t.type\t%s, @object\n\t.size\t%s, 4\n%s:\n\t.long\t%s\n", tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->res->symbol.text, tac->op1->symbol.text);
     }
 }
 
@@ -216,15 +201,17 @@ void setOperators(TAC* tac, FILE* outputFile){
 
   	// Coloca op1 em edx e o op2 em eax
 	if(isdigit(tac->op1->symbol.text[0])){
-		fprintf(outputFile, "\tmovl $%s, %%edx\n", tac->op1->symbol.text);
+        // Imediato
+		fprintf(outputFile, "\tmovl\t$%s, %%edx\n", tac->op1->symbol.text);
 	}else{
-		fprintf(outputFile, "\tmovl	%s(%%rip), %%edx\n", tac->op1->symbol.text);
+		fprintf(outputFile, "\tmovl\t%s(%%rip), %%edx\n", tac->op1->symbol.text);
   	}
 
 	if(isdigit(tac->op2->symbol.text[0])){
-		fprintf(outputFile, "\tmovl	$%s, %%eax\n", tac->op2->symbol.text);
+        // Imediato
+		fprintf(outputFile, "\tmovl\t$%s, %%eax\n", tac->op2->symbol.text);
 	}
 	else{
-		fprintf(outputFile, "\tmovl	%s(%%rip), %%eax\n", tac->op2->symbol.text);
+		fprintf(outputFile, "\tmovl\t%s(%%rip), %%eax\n", tac->op2->symbol.text);
 	}
 }
